@@ -1,6 +1,7 @@
 // Importar la función para conectarse a la base de datos
 const connectDatabase = require("../security/conexion");
 const bcrypt = require("bcrypt"); // Asegúrate de tener bcrypt instalado: npm install bcrypt
+const CryptoJS = require("crypto-js");
 
 // Controlador para validar usuario y contraseña
 const getUsers = async (req, res) => {
@@ -12,7 +13,7 @@ const getUsers = async (req, res) => {
 		const conexion = await connectDatabase();
 
 		// Ejecutar la consulta SQL para buscar al usuario por el nombre de usuario
-		const [rows] = await conexion.execute("SELECT * FROM usuario WHERE nombre = ?", [username]);
+		const [rows] = await conexion.execute("SELECT * FROM usuario WHERE identificacion = ?", [username]);
 
 		// Verificar si el usuario existe
 		if (rows.length === 0) {
@@ -24,12 +25,10 @@ const getUsers = async (req, res) => {
 
 		const user = rows[0];
 
+		const hashedPassword = CryptoJS.SHA256(password).toString();;
 
-		console.log(user );
-		// Comparar la contraseña proporcionada con la encriptada en la base de datos
-		const isPasswordValid = await bcrypt.compare(password, user.password_hash);
-
-		if (!isPasswordValid) {
+		// Comparar la contraseña hasheada con la almacenada en la base de datos
+		if (user.password_hash !== hashedPassword) {
 			return res.status(401).json({
 				success: false,
 				message: "Contraseña incorrecta",
@@ -60,21 +59,43 @@ const getUsers = async (req, res) => {
 
 //Funcion que agregar a un usuario
 const setUsers = async (req, res) => {
+	let conexion = null; // Inicializar la conexión como null
 	try {
 		// Obtener los datos del cuerpo de la solicitud
-		const { username, password } = req.body;
+		const {
+			nombre,
+			apellido,
+			tipoIden,
+			fechaNaci,
+			direccion,
+			telefono,
+			identificacion,
+			password
+		} = req.body;
+
 
 		// Encriptar la contraseña
-		const saltRounds = 10; // Número de rondas para encriptar la contraseña
-		const hashedPassword = await bcrypt.hash(password, saltRounds);
+		const hashedPassword = CryptoJS.SHA256(password).toString();
 
 		// Obtener la conexión a la base de datos
-		const conexion = await connectDatabase();
+		conexion = await connectDatabase();
 
 		// Ejecutar la consulta SQL para insertar el usuario
 		await conexion.execute(
-			"INSERT INTO usuario (nombre, password_hash,is_admin) VALUES (?, ?, 0)",
-			[username, hashedPassword]
+			`INSERT INTO usuario (nombre, apellido, tipo_identificacion_id, identificacion, 
+		  fecha_nacimiento, direccion, telefono, password_hash, is_admin) 
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+			[
+				nombre,
+				apellido,
+				tipoIden,
+				identificacion,
+				fechaNaci,
+				direccion,
+				telefono,
+				hashedPassword,
+				0
+			]
 		);
 
 		// Devolver una respuesta de éxito
@@ -82,16 +103,19 @@ const setUsers = async (req, res) => {
 			success: true,
 			message: "Usuario creado exitosamente",
 		});
-
-		// Cerrar la conexión después de la inserción
-		await conexion.end();
 	} catch (error) {
 		console.error("Error al insertar el usuario:", error);
 		res.status(500).json({
 			success: false,
 			message: "Error al insertar el usuario en la base de datos",
 		});
+	} finally {
+		// Asegurarse de cerrar la conexión a la base de datos si existe
+		if (conexion) {
+			await conexion.end();
+		}
 	}
 };
+
 // Exportar el controlador
 module.exports = { getUsers, setUsers };
