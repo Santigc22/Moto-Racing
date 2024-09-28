@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 export default function Home() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const router = useRouter();
+  const router = useRouter(); 
 
   const validateLogin = async () => {
     try {
@@ -27,6 +27,10 @@ export default function Home() {
     }
   };
 
+  const goToRegisterPage = () => {
+    router.push('/registerUser'); // Navega a la página RegisterUser
+  };
+
   return (
     <div className="d-flex flex-column align-items-center vh-100 justify-content-center">
       <main className="main">
@@ -37,11 +41,10 @@ export default function Home() {
           </div>
 
           <div className="d-flex flex-column gap-1 bg-light px-5 py-4 px-sm-5">
-            <label htmlFor="username_input" className="form-label text-uppercase fs- text-muted">Nombre de usuario</label>
+            <label htmlFor="username_input" className="form-label text-uppercase fs- text-muted">Identificacion</label>
             <input
               id="username_input"
-              type="text"
-              placeholder="user@acme.com"
+              type="number"
               required
               className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm text-gray-200"
               onChange={(e) => setUsername(e.target.value)}
@@ -78,6 +81,7 @@ export default function Home() {
               aria-disabled="false"
               className="btn btn-primary border border-gray-200 d-flex align-items-center justify-content-center w-100"
               style={{ height: "40px", marginTop: "20px" }}
+              onClick={goToRegisterPage}
             >
               registrarse
             </button>
