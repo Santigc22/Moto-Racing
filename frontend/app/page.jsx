@@ -69,14 +69,14 @@ export default function Home() {
           <label htmlFor="username_input" className="form-label text-uppercase text-white">Nombre de usuario</label>
           
           <input onChange={(e)=>{UsernameHandler(e.target.value)}} id="username_input" type="text" placeholder="user@acme.com" required 
-          className={`mt-1 form-control rounded border border-gray-200 shadow-sm text-white ${styles.customInput}`}
+          className={`mt-1 form-control rounded border border-gray-200 shadow-sm text-black ${styles.customInput}`}
           ></input>
 
           <br></br>
 
           <div>
             <label htmlFor="password" className="form-label text-uppercase text-white">Contraseña</label>
-            <input onChange={(e)=>{PasswordHandler(e.target.value)}} id="password" required className={`mt-1 form-control rounded border border-gray-200 text-white shadow-sm ${styles.customInput}`} 
+            <input onChange={(e)=>{PasswordHandler(e.target.value)}} id="password" required className={`mt-1 form-control rounded border border-gray-200 text-black shadow-sm ${styles.customInput}`} 
             type="password" name="password"></input>
           </div>
 
