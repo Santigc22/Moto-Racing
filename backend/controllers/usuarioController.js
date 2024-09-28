@@ -1,7 +1,7 @@
 // Importar la función para conectarse a la base de datos
 const connectDatabase = require("../security/conexion");
-const bcrypt = require("bcrypt"); // Asegúrate de tener bcrypt instalado: npm install bcrypt
 const CryptoJS = require("crypto-js");
+const jwt = require("jsonwebtoken");
 
 // Controlador para validar usuario y contraseña
 const getUsers = async (req, res) => {
@@ -13,7 +13,10 @@ const getUsers = async (req, res) => {
 		const conexion = await connectDatabase();
 
 		// Ejecutar la consulta SQL para buscar al usuario por el nombre de usuario
-		const [rows] = await conexion.execute("SELECT * FROM usuario WHERE identificacion = ?", [username]);
+		const [rows] = await conexion.execute(
+			"SELECT * FROM usuario WHERE identificacion = ?",
+			[username]
+		);
 
 		// Verificar si el usuario existe
 		if (rows.length === 0) {
@@ -25,7 +28,12 @@ const getUsers = async (req, res) => {
 
 		const user = rows[0];
 
-		const hashedPassword = CryptoJS.SHA256(password).toString();;
+		// process.env.CODE_SECRET_DATA;
+		const hashedPassword = CryptoJS.SHA256(
+			password,
+			process.env.CODE_SECRET_DATA
+		).toString();
+		console.log(hashedPassword);
 
 		// Comparar la contraseña hasheada con la almacenada en la base de datos
 		if (user.password_hash !== hashedPassword) {
@@ -35,14 +43,29 @@ const getUsers = async (req, res) => {
 			});
 		}
 
-		// Si la validación es correcta, devolver los datos del usuario o cualquier respuesta
-		res.json({
-			success: true,
-			message: "Inicio de sesión exitoso",
-			data: {
-				username: user.username,
-				// Puedes agregar más datos del usuario si es necesario
+		var expiresdTime = "1h";
+
+		const token = jwt.sign(
+			{
+				user_id: user.id,
+				user_name: user.nombre,
+				user_doc: user.identificacion,
 			},
+			process.env.SECRET_TOKEN,
+			{
+				expiresIn: expiresdTime,
+			}
+		);
+
+		res.set("Access-Control-Expose-Headers", "Authorization");
+		res.setHeader("authorization", token);
+		res.status(200).json({
+			message: "Inicio de sesión exitoso",
+			user_id: user.id,
+			user_name: user.nombre,
+			user_apellido: user.apellido,
+			user_doc: user.identificacion,
+			authorization: token,
 		});
 
 		// Cerrar la conexión después de la consulta
@@ -55,7 +78,6 @@ const getUsers = async (req, res) => {
 		});
 	}
 };
-
 
 //Funcion que agregar a un usuario
 const setUsers = async (req, res) => {
@@ -70,9 +92,8 @@ const setUsers = async (req, res) => {
 			direccion,
 			telefono,
 			identificacion,
-			password
+			password,
 		} = req.body;
-
 
 		// Encriptar la contraseña
 		const hashedPassword = CryptoJS.SHA256(password).toString();
@@ -94,7 +115,7 @@ const setUsers = async (req, res) => {
 				direccion,
 				telefono,
 				hashedPassword,
-				0
+				0,
 			]
 		);
 
