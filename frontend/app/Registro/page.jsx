@@ -1,5 +1,5 @@
 import React from 'react'
-import Registro from './registro'
+import Registro from './Registro'
 
 
 
