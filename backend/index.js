@@ -4,6 +4,7 @@ require("dotenv").config();
 const connectDatabase = require("./security/conexion");
 const app = express();
 const usuarioRoutes = require("./routes/usuario_routes");
+const motosRoutes = require("./routes/motos_routes");
 
 app.use(express.json());
 
@@ -18,6 +19,10 @@ app.get("/", async (req, res) => {
 });
 
 app.use("/usuarios", usuarioRoutes);
+
+app.use("/motos", motosRoutes);
+
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
 	console.log(`Servidor iniciado en el puerto http:/localhost:${PORT}`);
