@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const connectDatabase = require("./security/conexion");
+// const connectDatabase = require("./security/conexion");
 const app = express();
 const usuarioRoutes = require("./routes/usuario_routes");
 const s3 = require('./routes/S3')
@@ -19,9 +19,12 @@ app.get("/", async (req, res) => {
 	);
 });
 
+app.use("/user", usuarioRoutes);
+const PORT = process.env.PORT || 3001;
+
 app.use("/usuarios", usuarioRoutes);
 app.use("/s3", s3);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-	console.log(`Servidor iniciado en el puerto http:/localhost:${PORT}`);
+	console.log(`Servidor iniciado en el puerto http://localhost:${PORT}`);
 });
