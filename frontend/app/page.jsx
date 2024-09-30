@@ -2,9 +2,12 @@
 import styles from "./page.module.css";
 import { useState } from "react";
 import VideoBackground from "./Components/VideoBackground";
+import { useRouter } from "next/navigation";
 
 
 export default function Home() {
+
+  const router = useRouter();
 
   const [username, setUsername] = useState("");
 
@@ -20,32 +23,38 @@ export default function Home() {
     setPassword(e);
   }
 
-  // const SubmitHandler = (e) =>
-  // {
+   const SubmitHandler = async (e) =>
+   {
     
-  //   e.preventDefault();
-  //   try {
+     e.preventDefault();
+     try {
 
-  //     const response = await fetch(//, 
-  //       {
-  //         method: 'POST',
-  //         body: JSON.stringify(
-  //           {
-  //             username: username, 
-  //             password: Password
-  //           }),
-  //           headers: {
-  //             'content-type': 'application/json'
-  //           }
-  //       });
+       const response = await fetch('https://moto-racing.onrender.com/usuarios/login', 
+         {
+           method: 'POST',
+           body: JSON.stringify(
+             {
+               username: username, 
+               password: Password
+             }),
+             headers: {
+               'content-type': 'application/json'
+             }
+         });
 
-  //       console.log(response.json);
+         if (response.ok) {
+          router.push("/dashboard");
+        } else {
+          alert("Algo ha salido mal");
+        }
+
+         console.log(response.json);
       
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
+     } catch (error) {
+       console.log(error);
+     }
     
-  //}
+  }
 
   return (
 
@@ -57,7 +66,7 @@ export default function Home() {
        <VideoBackground/>
       <main className={styles.main}>
 
-        <form className={`position-relative vw-75 overflow-hidden rounded border border-gray-100 ${styles.customShadow}`}>
+        <form onSubmit={(e) =>SubmitHandler(e)} className={`position-relative vw-75 overflow-hidden rounded border border-gray-100 ${styles.customShadow}`}>
 
         <div className={`d-flex flex-column align-middle justify-content-center border-bottom border-gray-200 px-5 py-2 pt-4 text-center ${styles.customBackground}`}>
           <h3 className="h5 text-white text-uppercase font-weight-bold">Inicio de sesión</h3>
@@ -86,7 +95,7 @@ export default function Home() {
             Iniciar sesión
           </button>
 
-          <a></a>
+          <a>Registrate</a>
 
           
         </div>
