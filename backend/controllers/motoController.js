@@ -1,4 +1,5 @@
 // Importar la función para conectarse a la base de datos
+const { mode } = require("crypto-js");
 const connectDatabase = require("../security/conexion");
 
 
@@ -37,7 +38,8 @@ const getMotos = async (req, res) => {
 
 		const [rows] = await conexion.execute(`SELECT m.id,u.nombre||' '||u.apellido AS nombre,m.marca,m.modelo,m.soat
                                             FROM moto m 
-                                            INNER JOIN usuario u ON u.id = m.propietario_id `);
+                                            INNER JOIN usuario u ON u.id = m.propietario_id  
+											WHERE m.estado = 1`);
 
 		res.json({
 			success: true,
@@ -129,23 +131,61 @@ const setMotos = async (req, res) => {
 	}
 };
 
-const deleteMoto = async (req, res) => {
+const estadoMoto = async (req, res) => {
     const id = parseInt(req.params.id);
     let conexion = null;
     try {
         conexion = await connectDatabase();
 
-        await conexion.execute('DELETE FROM moto WHERE id = ?', [id]);
+        await conexion.execute('UPDATE moto set estado = 0 WHERE id = ?', [id]);
 
         res.json({
             success: true,
-            message: "Dato eliminado correctamente",
+            message: "Dato actualizado correctamente",
         });
     } catch (error) {
-        console.error("Error al eliminar el registro:", error);
+        console.error("Error al actualizar el registro:", error);
         res.status(500).json({
             success: false,
-            message: "Error al eliminar en la base de datos",
+            message: "Error al actualizar en la base de datos",
+        });
+    } finally {
+        if (conexion) {
+            await conexion.end();
+        }
+    }
+};
+
+
+const updateMoto = async (req, res) => {
+    let conexion = null;
+    try {
+		const {
+			marca,
+			pilotoId,
+            modelo,
+            soat,
+			idMoto
+		} = req.body;
+
+        conexion = await connectDatabase();
+
+        await conexion.execute(`UPDATE moto 
+								set marca = ?,
+								propietario_id = ?,
+								modelo = ?,
+								soat = ?
+								WHERE id = ?`, [marca, pilotoId,modelo,soat,idMoto]);
+
+        res.json({
+            success: true,
+            message: "Dato actualizado correctamente",
+        });
+    } catch (error) {
+        console.error("Error al actualizar el registro:", error);
+        res.status(500).json({
+            success: false,
+            message: "Error al actualizar en la base de datos",
         });
     } finally {
         if (conexion) {
@@ -157,4 +197,4 @@ const deleteMoto = async (req, res) => {
 
 
 // Exportar el controlador
-module.exports = { setMotos, getpiloto, getMotos, deleteMoto, getMotoId };
+module.exports = { setMotos, getpiloto, getMotos, estadoMoto, getMotoId, updateMoto };

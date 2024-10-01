@@ -10,6 +10,8 @@ export default function Home() {
     const [soat, setSoat] = useState("");
     const [pilotos, setPilotos] = useState([]);
     const [motos, setMotos] = useState([]);
+    const [estadoAct, setIEstadoActu] = useState(false);
+    const [estadoRe, setIEstadoRegi] = useState(true);
 
     const setPiloto = () => {
         try {
@@ -88,27 +90,60 @@ export default function Home() {
         })
             .then((res) => res.json())
             .then((responseData) => {
-            console.log(responseData);
+            
+            setIdMoto(responseData.response[0]['id'])
+            setPilotoId(responseData.response[0]['propietario_id']);
+            setMarca(responseData.response[0]['marca']);
+            setModelo(responseData.response[0]['modelo']);
+            setSoat(responseData.response[0]['soat']);
+            setIEstadoActu(true); 
+            setIEstadoRegi(false);
             });
         } catch (err) {
         console.error("Error al hacer la solicitud:", err);
         }
     };
 
-    const eliminarMoto = async (id) => {
 
-        const confirmacion = window.confirm(`¿Estás seguro de que deseas eliminar ?`);
+    const updateMoto = async (id) => {
+      try {
+        fetch(`http://localhost:3001/motos/updateMoto`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              idMoto,
+              pilotoId,
+              marca,
+              modelo,
+              soat
+            }),
+        })
+            .then((res) => res.json())
+            .then((responseData) => {
+              alert(responseData["message"]);
+              setIEstadoRegi(true);
+            
+            });
+        } catch (err) {
+        console.error("Error al hacer la solicitud:", err);
+        }
+    };
+
+
+    const inactivarMoto = async (id) => {
+
+        const confirmacion = window.confirm(`¿Estás seguro de que deseas Inactivar ?`);
 
         if (confirmacion) {
-            fetch(`http://localhost:3001/motos/delete/${id}`, {
-                method: 'DELETE'
+            fetch(`http://localhost:3001/motos/updateEstado/${id}`, {
+                method: 'POST'
             })
                 .then(res => res.json())
                 .then(responseData => {
                     alert(responseData["message"]);
                 });
         } else {
-            console.log(`No se realizó la eliminación.`);
+            console.log(`No se realizó la Inactivacion.`);
         }
     };
 
@@ -126,7 +161,11 @@ export default function Home() {
           <div className="d-flex flex-column align-middle justify-content-center border-bottom border-gray-200 bg-white px-5 py-2 pt-4 text-center">
             <h3 className="h5 font-weight-bold">Registro de motos</h3>
           </div>
-
+          <input
+                  id="id_resgistro"
+                  type="hidden"
+                  value={idMoto}
+                />
           <div className="d-flex flex-column gap-1 bg-light px-5 py-4 px-sm-5">
             <div className="row">
               <div className="col-md-12">
@@ -140,6 +179,7 @@ export default function Home() {
                   id="id_type"
                   required
                   className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
+                  value={pilotoId}
                   onChange={(e) => setPilotoId(e.target.value)}
                 > 
                 <option value=""></option>
@@ -164,6 +204,7 @@ export default function Home() {
                   id="marca"
                   type="text"
                   required
+                  value={marca}
                   className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
                   onChange={(e) => setMarca(e.target.value)}
                 />
@@ -179,6 +220,7 @@ export default function Home() {
                   id="modelo"
                   type="number"
                   required
+                  value={modelo}
                   className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
                   onChange={(e) => setModelo(e.target.value)}
                 />
@@ -197,6 +239,7 @@ export default function Home() {
                   id="soat"
                   type="text"
                   required
+                  value={soat}
                   className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
                   onChange={(e) => setSoat(e.target.value)}
                 />
@@ -211,11 +254,26 @@ export default function Home() {
                   className="btn btn-success border border-gray-200 d-flex align-items-center justify-content-center w-100 mt-4"
                   style={{ height: "40px" }}
                   onClick={insertMoto}
+                  disabled={!estadoRe}
                 >
                   Registrarse
                 </button>
               </div>
+
+              <div className="col-md-6">
+                <button
+                  type="submit"
+                  aria-disabled="false"
+                  className="btn btn-primary border border-gray-200 d-flex align-items-center justify-content-center w-100 mt-4"
+                  style={{ height: "40px" }}
+                  onClick={updateMoto}
+                  disabled={!estadoAct}
+                >
+                  Actualizar
+                </button>
+              </div>
             </div>
+            
 
             {/* Tabla para mostrar las motos registradas */}
             <div className="row mt-5">
@@ -240,7 +298,7 @@ export default function Home() {
                      <td>{dato.soat}</td>
                      <td style={{width:'200px'}}>
                          <button className="btn btn-warning btn-sm me-2" onClick={() => searchMoto(dato.id)} id='btn_eliminar'>Actualizar</button>
-                         <button className="btn btn-danger btn-sm" onClick={() => eliminarMoto(dato.id)} id='btn_eliminar'>Eliminar</button>
+                         <button className="btn btn-danger btn-sm" onClick={() => inactivarMoto(dato.id)} id='btn_eliminar'>Inactivar</button>
                      </td>
                  </tr>
                     ))}
