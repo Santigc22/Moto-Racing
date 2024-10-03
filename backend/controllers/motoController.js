@@ -36,7 +36,7 @@ const getMotos = async (req, res) => {
 		// Obtener la conexión a la base de datos
 		const conexion = await connectDatabase();
 
-		const [rows] = await conexion.execute(`SELECT m.id,u.nombre||' '||u.apellido AS nombre,m.marca,m.modelo,m.soat
+		const [rows] = await conexion.execute(`SELECT m.id,u.nombre||' '||u.apellido AS nombre,m.marca,m.modelo,m.soat,m.referencia,m.tipo_moto
                                             FROM moto m 
                                             INNER JOIN usuario u ON u.id = m.propietario_id  
 											WHERE m.estado = 1`);
@@ -94,7 +94,9 @@ const setMotos = async (req, res) => {
 			pilotoId,
             marca,
             modelo,
-            soat
+            soat,
+			tipoMoto,
+			referencia
 		} = req.body;
 
 		// Obtener la conexión a la base de datos
@@ -102,13 +104,15 @@ const setMotos = async (req, res) => {
 
 		// Ejecutar la consulta SQL
 		await conexion.execute(
-			`INSERT INTO moto (propietario_id, marca, modelo,soat) 
-		VALUES (?, ?, ?, ?)`,
+			`INSERT INTO moto (propietario_id, marca, modelo,soat,referencia,tipo_moto) 
+		VALUES (?, ?, ?, ?. ?, ?)`,
 			[
 				pilotoId,
                 marca,
                 modelo,
-                soat
+                soat,
+				tipoMoto,
+				referencia
 			]
 		);
 
@@ -165,7 +169,9 @@ const updateMoto = async (req, res) => {
 			pilotoId,
             modelo,
             soat,
-			idMoto
+			idMoto,
+			tipoMoto,
+			referencia
 		} = req.body;
 
         conexion = await connectDatabase();
@@ -174,8 +180,10 @@ const updateMoto = async (req, res) => {
 								set marca = ?,
 								propietario_id = ?,
 								modelo = ?,
-								soat = ?
-								WHERE id = ?`, [marca, pilotoId,modelo,soat,idMoto]);
+								soat = ?,
+								referencia = ?,
+								tipo_moto = ?
+								WHERE id = ?`, [marca, pilotoId,modelo,soat,referencia,tipoMoto,idMoto]);
 
         res.json({
             success: true,

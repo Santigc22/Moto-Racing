@@ -10,6 +10,8 @@ export default function Home() {
     const [soat, setSoat] = useState("");
     const [pilotos, setPilotos] = useState([]);
     const [motos, setMotos] = useState([]);
+    const [referencia, setReferencia] = useState([]);
+    const [tipoMoto, setTipoMoto] = useState([]);
     const [estadoAct, setIEstadoActu] = useState(false);
     const [estadoRe, setIEstadoRegi] = useState(true);
 
@@ -40,7 +42,7 @@ export default function Home() {
     };
 
     const validarCampos = () => {
-        if (!pilotoId || !marca || !modelo || !soat) {
+        if (!pilotoId || !marca || !modelo || !soat || !tipoMoto || !referencia) {
             alert("Todos los campos son obligatorios.");
         return false;
         }
@@ -60,7 +62,9 @@ export default function Home() {
                 pilotoId,
                 marca,
                 modelo,
-                soat
+                soat,
+                tipoMoto,
+                referencia
             }),
         })
             .then((res) => res.json())
@@ -115,7 +119,9 @@ export default function Home() {
               pilotoId,
               marca,
               modelo,
-              soat
+              soat,
+              tipoMoto,
+              referencia
             }),
         })
             .then((res) => res.json())
@@ -168,7 +174,7 @@ export default function Home() {
                 />
           <div className="d-flex flex-column gap-1 bg-light px-5 py-4 px-sm-5">
             <div className="row">
-              <div className="col-md-12">
+              <div className="col-md-6">
                 <label
                   htmlFor="first_name"
                   className="form-label text-uppercase small text-muted"
@@ -190,9 +196,6 @@ export default function Home() {
             ))}
                 </select>
               </div>
-            </div>
-
-            <div className="row mt-3">
               <div className="col-md-6">
                 <label
                   htmlFor="marca"
@@ -209,6 +212,9 @@ export default function Home() {
                   onChange={(e) => setMarca(e.target.value)}
                 />
               </div>
+            </div>
+
+            <div className="row mt-3">
               <div className="col-md-6">
                 <label
                   htmlFor="modelo"
@@ -225,9 +231,6 @@ export default function Home() {
                   onChange={(e) => setModelo(e.target.value)}
                 />
               </div>
-            </div>
-
-            <div className="row mt-3">
               <div className="col-md-6">
                 <label
                   htmlFor="soat"
@@ -242,6 +245,41 @@ export default function Home() {
                   value={soat}
                   className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
                   onChange={(e) => setSoat(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="row mt-3">
+              <div className="col-md-6">
+                <label
+                  htmlFor="soat"
+                  className="form-label text-uppercase small text-muted"
+                >
+                  Referencia (*)
+                </label>
+                <input
+                  id="soat"
+                  type="text"
+                  required
+                  value={referencia}
+                  className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
+                  onChange={(e) => setReferencia(e.target.value)}
+                />
+              </div>
+              <div className="col-md-6">
+                <label
+                  htmlFor="soat"
+                  className="form-label text-uppercase small text-muted"
+                >
+                  Tipo de moto (*)
+                </label>
+                <input
+                  id="soat"
+                  type="text"
+                  required
+                  value={tipoMoto}
+                  className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
+                  onChange={(e) => setTipoMoto(e.target.value)}
                 />
               </div>
             </div>
@@ -286,6 +324,8 @@ export default function Home() {
                       <th>Marca</th>
                       <th>Modelo</th>
                       <th>SOAT</th>
+                      <th>Referencia</th>
+                      <th>Tipo moto</th>
                       <th>Acciones</th>
                     </tr>
                   </thead>
@@ -296,6 +336,8 @@ export default function Home() {
                      <td>{dato.marca}</td>
                      <td>{dato.modelo}</td>
                      <td>{dato.soat}</td>
+                     <td>{dato.referencia}</td>
+                     <td>{dato.tipo_moto}</td>
                      <td style={{width:'200px'}}>
                          <button className="btn btn-warning btn-sm me-2" onClick={() => searchMoto(dato.id)} id='btn_eliminar'>Actualizar</button>
                          <button className="btn btn-danger btn-sm" onClick={() => inactivarMoto(dato.id)} id='btn_eliminar'>Inactivar</button>
