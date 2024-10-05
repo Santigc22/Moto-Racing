@@ -1,81 +1,256 @@
-import React from 'react';
+'use client'
+import React, { useEffect } from 'react';
 import styles from "./page.module.css";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import ImageBG from '../Components/ImageBG';
 
 function Registro() {
+
+
+  const [nombre, setNombre] = useState('');
+  const [apellido, setApellido] = useState('');
+  const [tipoIden, setTipoIden] = useState('');
+  const [identificacion, setIdentificacion] = useState('');
+  const [fechaNaci, setFechaNaci] = useState('');
+  const [direccion, setDireccion] = useState('');
+  const [telefono, setTelefono] = useState('');
+  const [password, setPassword] = useState('');
+  const [BGimage, setBGimage] = useState("moto1.jpg");
+ 
+  
+  
+
+  const router = useRouter(); 
+
+  const validarCampos = () => {
+    if (
+      !nombre ||
+      !apellido ||
+      !tipoIden ||
+      !identificacion ||
+      !fechaNaci ||
+      !direccion ||
+      !telefono ||
+      !password
+    ) {
+      alert("Todos los campos son obligatorios.");
+      return false;
+    }
+    return true;
+  };
+
+
+  const registrar = async () => {
+
+    if (!validarCampos()) {
+      return;
+    }
+
+    try {
+      fetch('http://localhost:3001/usuarios/setUser', {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre,
+          apellido,
+          tipoIden,
+          fechaNaci,
+          direccion,
+          telefono,
+          identificacion,
+          password
+        }),
+      })
+        .then((res) => res.json())
+        .then((responseData) => {
+          console.log(responseData);
+          alert(responseData);
+          setNombre("");
+          setApellido("");
+          setTipoIden("");
+          setIdentificacion("");
+          setFechaNaci("");
+          setDireccion("");
+          setTelefono("");
+          setPassword("");
+        });
+    } catch (err) {
+      console.error("Error al hacer la solicitud:", err);
+    }
+  };
+
+
+
+  const goToLogin = () => {
+    router.push('/'); // Navega a la página RegisterUser
+  };
+
+  
+
+ 
   return (
-    <div className={`d-flex flex-column align-items-center vh-100 justify-content-center ${styles.customForm}`}>
+
+ 
       
-      <main className={styles.main}>
+    
 
-          <form className={`position-relative vw-75 overflow-hidden rounded border border-gray-100 ${styles.customShadow}`}>
+    <div className="d-flex align-items-center justify-content-center">
 
-          <div className={`d-flex flex-column align-middle justify-content-center border-bottom border-gray-200 px-5 py-2 pt-4 text-center`}>
-            <h3 className="h5 text-white text-uppercase font-weight-bold">Registro</h3>
-            <p className="small text-white-50">Usa tu correo y contraseña para crear tu cuenta</p>
+<ImageBG BGimage={BGimage}/>
+      
+      <main className={`${styles.main}`}>
+        <div className={`position-relative text-white overflow-hidden border border-danger ${styles.customShadow}`}>
+          <div className="d-flex flex-column bg-black align-middle justify-content-center border-bottom border-danger px-5 py-2 pt-4 text-center">
+            <h3 className="h5 font-weight-bold">Registro de usuario</h3>
           </div>
-        
-          <label htmlFor='name'>Nombre</label>
-          
-          <input id='name'></input>
 
-          <br></br>
+          <div className={`d-flex flex-column gap-1 px-5 py-4 px-sm-5 ${styles.customBackground}`}>
+            
+            <div className="row">
+              <div className="col-md-6">
+                <label htmlFor="first_name" className="form-label text-white text-uppercase small ">Nombre (*)</label>
+                <input
+                  id="first_name"
+                  type="text"
+                  required
+                  className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
+                  onChange={(e) => setNombre(e.target.value)}
+                />
+              </div>
 
-          <label htmlFor='lastname'>Apellido</label>
+              <div className="col-md-6">
+                <label htmlFor="last_name" className=" text-white form-label text-uppercase small ">Apellido (*)</label>
+                <input
+                  id="last_name"
+                  type="text"
+                  required
+                  className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
+                  onChange={(e) => setApellido(e.target.value)}
+                />
+              </div>
+            </div>
 
-          <input id='lastname'></input>
+            <div className="row mt-3">
+              <div className="col-md-6">
+                <label htmlFor="id_type" className="form-label text-uppercase small text-white">Tipo de Identificación (*)</label>
+                <select
+                  id="id_type"
+                  required
+                  className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
+                  onChange={(e) => setTipoIden(e.target.value)}
+                >
+                  <option value=""></option>
+                  <option value="1">Cédula de Ciudadanía</option>
+                  <option value="2">Cédula de Extranjería</option>
+                  <option value="3">Tarjeta de Identidad</option>
+                  <option value="4">Pasaporte</option>
+                  <option value="5">Registro Civil</option>
+                  <option value="6">NIT</option>
+                  <option value="7">Permiso Especial de Permanencia</option>
+                </select>
+              </div>
+                <div className="col-md-6">
+                  <label htmlFor="identificacion" className="form-label text-uppercase small text-white">Identificacion (*)</label>
+                  <input
+                    id="identificacion"
+                    type="number"
+                    required
+                    className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
+                    onChange={(e) => setIdentificacion(e.target.value)}
+                  />
+                </div>
+              
+            </div>
 
-          <br></br>
+            <div className="row mt-3">
+              <div className="col-md-6">
+                <label htmlFor="address" className="form-label text-uppercase small text-white">Dirección (*)</label>
+                <input
+                  id="address"
+                  type="text"
+                  required
+                  className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
+                  onChange={(e) => setDireccion(e.target.value)}
+                />
+              </div>
+              <div className="col-md-6">
+                <label htmlFor="birth_date" className="form-label text-uppercase small text-white">Fecha de Nacimiento (*)</label>
+                <input
+                  id="birth_date"
+                  type="date"
+                  required
+                  className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
+                  onChange={(e) => setFechaNaci(e.target.value)}
+                />
+              </div>
+            </div>
 
-          <label htmlFor='identificationType'>Tipo de identificación</label>
+            <div className="row mt-3">
+              <div className="col-md-6">
+                <label htmlFor="phone" className="form-label text-uppercase small text-white">Teléfono (*)</label>
+                <input
+                  id="phone"
+                  type="tel"
+                  required
+                  className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
+                  onChange={(e) => setTelefono(e.target.value)}
+                />
+              </div>
 
-          <input id='identificationType'></input>
+              
+            </div>
 
-          <br></br>
+            <div className="row mt-3">
+              <div className="col-md-12">
+                <label htmlFor="password" className="form-label text-uppercase small text-white">Contraseña (*)</label>
+                <input
+                  id="password"
+                  type="password"
+                  required
+                  className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+            </div>
 
-          <label htmlFor='identificationNumber'>Identificación</label>
 
-          <input id='identificationNumber'></input>
+            <div className="row mt-3">
+              <div className="col-md-6">
+                
+              <button
+                type="submit"
+                aria-disabled="false"
+                className="btn btn-success border border-gray-200 d-flex align-items-center justify-content-center w-100 mt-4"
+                style={{ height: "40px" }}
+                onClick={registrar}
+              >
+                Registrarse
+              </button>
+              </div>
+              <div className="col-md-6">
+                
+              <button
+                type="submit"
+                aria-disabled="false"
+                className="btn btn-primary border border-gray-200 d-flex align-items-center justify-content-center w-100 mt-4"
+                style={{ height: "40px" }}
+                onClick={goToLogin}
+              >
+                Volver
+              </button>
+              </div>
+            </div>
+            
 
-          <br></br>
+          </div>
+        </div>
 
-          <label htmlFor='birthDate'>Fecha de nacimiento</label>
-
-          <input id='birthDate'></input>
-
-          <br></br>
-
-          <label htmlFor='Address'>Direccion</label>
-
-          <input id='Address'></input>
-
-          <br></br>
-
-          <label htmlFor='PhoneNumber'>Teléfono</label>
-
-          <input id='PhoneNumber'></input>
-
-          <br></br>
-
-          <label htmlFor='username'>Nombre de usuario</label>
-
-          <input id='username'></input>
-
-          <br></br>
-
-          <label htmlFor='password'>Contraseña</label>
-
-          <input id='password'></input>
-
-          <br></br>
-
-          <label htmlFor='password_confirm'>Confirmar contraseña</label>
-
-          <input id='password_confirm'></input>
-
-          </form>
       </main>
     </div>
+   
   )
+  
 }
 
 export default Registro
