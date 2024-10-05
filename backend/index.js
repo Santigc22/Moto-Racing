@@ -19,12 +19,9 @@ app.get("/", async (req, res) => {
 	);
 });
 
-app.use("/user", usuarioRoutes);
-const PORT = process.env.PORT || 3001;
-
 app.use("/usuarios", usuarioRoutes);
 app.use("/s3", s3);
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ;
 app.listen(PORT, () => {
 	console.log(`Servidor iniciado en el puerto http://localhost:${PORT}`);
 });
