@@ -5,7 +5,7 @@ require("dotenv").config();
 const app = express();
 const usuarioRoutes = require("./routes/usuario_routes");
 const s3 = require("./routes/S3");
-
+const tiposRouter = require("./routes/tipos_routes");
 app.use(express.json());
 
 app.use(cors());
@@ -19,8 +19,12 @@ app.get("/", async (req, res) => {
 	);
 });
 
+app.use("/tipos", tiposRouter);
+
 app.use("/usuarios", usuarioRoutes);
 app.use("/s3", s3);
+
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
 	console.log(`Servidor iniciado en el puerto http://localhost:${PORT}`);
