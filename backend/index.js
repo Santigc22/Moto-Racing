@@ -4,6 +4,7 @@ require("dotenv").config();
 const connectDatabase = require("./security/conexion");
 const app = express();
 const usuarioRoutes = require("./routes/usuario_routes");
+const pistaRoutes = require("./routes/pista_routes");
 const s3 = require('./routes/S3')
 
 app.use(express.json());
@@ -20,6 +21,8 @@ app.get("/", async (req, res) => {
 });
 
 app.use("/usuarios", usuarioRoutes);
+app.use("/pista",pistaRoutes);
+
 app.use("/s3", s3);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
