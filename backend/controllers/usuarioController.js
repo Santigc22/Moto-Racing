@@ -2,6 +2,19 @@
 const connectDatabase = require("../security/conexion");
 const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
+const Joi = require("joi");
+
+const parametersUser = Joi.object({
+	nombre: Joi.string().max(255).required(),
+	apellido: Joi.string().max(255).required(),
+	tipoIden: Joi.number().max(10).required(),
+	fechaNaci: Joi.date().required(),
+	direccion: Joi.string().max(255).required(),
+	telefono: Joi.string().max(19).required(),
+	identificacion: Joi.string().max(10).required(),
+	password: Joi.string().max(255).required(),
+	tipoUser: Joi.number().max(10).required()
+});
 
 // Controlador para validar usuario y contraseña
 const getUsers = async (req, res) => {
@@ -82,6 +95,9 @@ const getUsers = async (req, res) => {
 //Funcion que agregar a un usuario
 const setUsers = async (req, res) => {
 	let conexion = null; // Inicializar la conexión como null
+
+	
+
 	try {
 		// Obtener los datos del cuerpo de la solicitud
 		const {
@@ -93,7 +109,28 @@ const setUsers = async (req, res) => {
 			telefono,
 			identificacion,
 			password,
+			tipoUser
 		} = req.body;
+	
+		console.log(req.body);
+		//Validar errores
+	
+		const { error } = parametersUser.validate({
+			nombre,
+			apellido,
+			tipoIden,
+			fechaNaci,
+			direccion,
+			telefono,
+			identificacion,
+			password,
+			tipoUser
+		})
+
+		if(error)
+		{
+			return(res.status(400).json({error:error.details[0].message}))
+		}
 
 		// Encriptar la contraseña
 		const hashedPassword = CryptoJS.SHA256(password).toString();
@@ -104,8 +141,8 @@ const setUsers = async (req, res) => {
 		// Ejecutar la consulta SQL para insertar el usuario
 		await conexion.execute(
 			`INSERT INTO usuario (nombre, apellido, tipo_identificacion_id, identificacion, 
-		  fecha_nacimiento, direccion, telefono, password_hash, is_admin) 
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		  fecha_nacimiento, direccion, telefono, password_hash, is_admin, id_tipo_usuario) 
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)`,
 			[
 				nombre,
 				apellido,
@@ -116,6 +153,7 @@ const setUsers = async (req, res) => {
 				telefono,
 				hashedPassword,
 				0,
+				tipoUser
 			]
 		);
 
