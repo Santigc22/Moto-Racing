@@ -10,19 +10,19 @@ function Registro() {
 
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
-  const [tipoIden, setTipoIden] = useState('');
+  const [tipoIden, setTipoIden] = useState();
   const [identificacion, setIdentificacion] = useState('');
   const [fechaNaci, setFechaNaci] = useState('');
   const [direccion, setDireccion] = useState('');
   const [telefono, setTelefono] = useState('');
   const [password, setPassword] = useState('');
-  const [TypeUserSelected, setTypeUserSelected] = useState();
+  const [tipoUser, setTypeUserSelected] = useState();
   const [showPilotForm, setShowPilotForm] = useState();
 
   const showForm = () =>
   {
    
-      setShowPilotForm(TypeUserSelected == 4 ? true : false);
+      setShowPilotForm(tipoUser == 4 ? true : false);
     
 
   }
@@ -31,7 +31,7 @@ function Registro() {
     
     showForm();
  
-  }, [TypeUserSelected])
+  }, [tipoUser])
   
 
   const [BGimage, setBGimage] = useState("moto1.jpg");
@@ -107,12 +107,7 @@ function Registro() {
 
   const router = useRouter(); 
 
-  const setTipoUserSelected = (e) =>
-  {
-
-    setTypeUserSelected(e);
-    console.log(e);
-  }
+ 
 
   const validarCampos = () => {
     if (
@@ -124,7 +119,7 @@ function Registro() {
       !direccion ||
       !telefono ||
       !password ||
-      !TypeUserSelected
+      !tipoUser
     ) {
       alert("Todos los campos son obligatorios.");
       return false;
@@ -140,7 +135,7 @@ function Registro() {
     }
 
     try {
-      fetch('https://moto-racing.onrender.com/usuarios/setUser', {
+      await fetch('https://moto-racing.onrender.com/usuarios/setUser', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -152,13 +147,12 @@ function Registro() {
           telefono,
           identificacion,
           password,
-          TypeUserSelected
+          tipoUser
         }),
       })
         .then((res) => res.json())
         .then((responseData) => {
-          console.log(responseData);
-          alert(responseData);
+
           setNombre("");
           setApellido("");
           setTipoIden("");
@@ -276,7 +270,10 @@ function Registro() {
                 <input
                   id="birth_date"
                   type="date"
+                  pattern="/^\d{4}-\d{2}-\d{2}$/" 
+                    title="El formato de la fecha debe ser YYYY-MM-DD"
                   required
+                  placeholder="YYYY-MM-DD" 
                   className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
                   onChange={(e) => setFechaNaci(e.target.value)}
                 />
@@ -302,7 +299,7 @@ function Registro() {
                   id="user_type"
                   required
                   className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
-                   onChange={(e) => (setTipoUserSelected(e.target.value))}
+                   onChange={(e) => setTypeUserSelected(e.target.value)}
                 >
                    <option value="" disabled selected> Seleccione una opción</option>
                   {Array.isArray(UserTypes) && UserTypes.map((UT, index) => (

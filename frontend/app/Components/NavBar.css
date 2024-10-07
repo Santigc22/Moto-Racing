@@ -22,7 +22,7 @@
 
 .NavBar{
     height: 64px;
-    position: sticky;
+    position: fixed;
     top: 0;
     backdrop-filter: blur(10px); /* Desenfoque */
     background-color: rgba(0, 0, 0, 0.8); /* Fondo semi-transparente */
