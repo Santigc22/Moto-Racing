@@ -38,7 +38,8 @@ const getMotos = async (req, res) => {
 
 		const [rows] = await conexion.execute(`SELECT m.id,u.nombre||' '||u.apellido AS nombre,m.marca,m.modelo,m.soat,m.referencia,m.tipo_moto
                                             FROM moto m 
-                                            INNER JOIN usuario u ON u.id = m.propietario_id  
+                                            INNER JOIN piloto p ON p.id = m.piloto_id 
+                                            INNER JOIN usuario u ON u.id = p.id   
 											WHERE m.estado = 1`);
 
 		res.json({
