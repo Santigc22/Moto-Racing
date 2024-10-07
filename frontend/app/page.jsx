@@ -116,7 +116,7 @@ export default function Home() {
           </button>
 
           <a href="./registro">
-            Crear cuenta
+            ¿No tienes cuenta?
           </a>
 
           

@@ -16,12 +16,103 @@ function Registro() {
   const [direccion, setDireccion] = useState('');
   const [telefono, setTelefono] = useState('');
   const [password, setPassword] = useState('');
+  const [TypeUserSelected, setTypeUserSelected] = useState();
+  const [showPilotForm, setShowPilotForm] = useState();
+
+  const showForm = () =>
+  {
+   
+      setShowPilotForm(TypeUserSelected == 4 ? true : false);
+    
+
+  }
+
+  useEffect(() => {
+    
+    showForm();
+ 
+  }, [TypeUserSelected])
+  
+
   const [BGimage, setBGimage] = useState("moto1.jpg");
  
+  const [IdentificationTypes, setIdentificationTypes] = useState([]);
+  const [UserTypes, setUserTypes] = useState([]);
+  const [BloodTypes, setBloodTypes] = useState([]);
+
+  
+
+
+
+  const IdentificationTypesFetch = async () =>
+  {
+    
+    try {
+      const response = await fetch('https://moto-racing.onrender.com/tipos/tipo_identificacion');
+
+      const data = await response.json();
+      setIdentificationTypes(data.data);
+    } catch (err) {
+      console.error("Error al hacer la solicitud:", err);
+    }
+    
+  }
+
+  
+  const UserTypesFetch = async () =>
+    {
+      
+      try {
+        const response = await fetch('https://moto-racing.onrender.com/tipos/tipo_usuario');
+  
+        const data = await response.json();
+
+        const result = data.data
+
+        let adminIndex = result.findIndex(obj => obj.id === 1); // Encuentra el índice del objeto con id 2
+
+        if (adminIndex > -1) {
+          result.splice(adminIndex, 1); // Elimina 1 elemento en la posición index
+        }
+        setUserTypes(result);
+      } catch (err) {
+        console.error("Error al hacer la solicitud:", err);
+      }
+      
+    }
+
+    const BloodTypesFetch = async () =>
+      {
+        
+        try {
+          const response = await fetch('https://moto-racing.onrender.com/tipos/tipo_sangre');
+    
+          const data = await response.json();
+          setBloodTypes(data.data);
+        } catch (err) {
+          console.error("Error al hacer la solicitud:", err);
+        }
+        
+      }
+
+  useEffect(() => {
+
+    IdentificationTypesFetch();
+    UserTypesFetch();
+    BloodTypesFetch();
+
+  }, [])
   
   
 
   const router = useRouter(); 
+
+  const setTipoUserSelected = (e) =>
+  {
+
+    setTypeUserSelected(e);
+    console.log(e);
+  }
 
   const validarCampos = () => {
     if (
@@ -32,7 +123,8 @@ function Registro() {
       !fechaNaci ||
       !direccion ||
       !telefono ||
-      !password
+      !password ||
+      !TypeUserSelected
     ) {
       alert("Todos los campos son obligatorios.");
       return false;
@@ -48,7 +140,7 @@ function Registro() {
     }
 
     try {
-      fetch('http://localhost:3001/usuarios/setUser', {
+      fetch('https://moto-racing.onrender.com/usuarios/setUser', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -59,7 +151,8 @@ function Registro() {
           direccion,
           telefono,
           identificacion,
-          password
+          password,
+          TypeUserSelected
         }),
       })
         .then((res) => res.json())
@@ -74,6 +167,7 @@ function Registro() {
           setDireccion("");
           setTelefono("");
           setPassword("");
+          setTypeUserSelected("");
         });
     } catch (err) {
       console.error("Error al hacer la solicitud:", err);
@@ -116,6 +210,7 @@ function Registro() {
                   required
                   className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
                   onChange={(e) => setNombre(e.target.value)}
+                  placeholder ="Adam"
                 />
               </div>
 
@@ -127,6 +222,7 @@ function Registro() {
                   required
                   className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
                   onChange={(e) => setApellido(e.target.value)}
+                  placeholder = "Muto"
                 />
               </div>
             </div>
@@ -140,14 +236,13 @@ function Registro() {
                   className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
                   onChange={(e) => setTipoIden(e.target.value)}
                 >
-                  <option value=""></option>
-                  <option value="1">Cédula de Ciudadanía</option>
-                  <option value="2">Cédula de Extranjería</option>
-                  <option value="3">Tarjeta de Identidad</option>
-                  <option value="4">Pasaporte</option>
-                  <option value="5">Registro Civil</option>
-                  <option value="6">NIT</option>
-                  <option value="7">Permiso Especial de Permanencia</option>
+                   <option value="" disabled selected> Seleccione una opción</option>
+                  {Array.isArray(IdentificationTypes) && IdentificationTypes.map((IT, index) => (
+
+                    <option key={IT.id} value={IT.id}>{IT.nombre} | ({IT.nombre_corto})</option>
+
+                  ))}
+                  
                 </select>
               </div>
                 <div className="col-md-6">
@@ -158,6 +253,7 @@ function Registro() {
                     required
                     className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
                     onChange={(e) => setIdentificacion(e.target.value)}
+                    placeholder = "0000000000"
                   />
                 </div>
               
@@ -172,6 +268,7 @@ function Registro() {
                   required
                   className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
                   onChange={(e) => setDireccion(e.target.value)}
+                  placeholder = "Carrera A # 00-00"
                 />
               </div>
               <div className="col-md-6">
@@ -195,11 +292,61 @@ function Registro() {
                   required
                   className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
                   onChange={(e) => setTelefono(e.target.value)}
+                  placeholder = "0000000000"
                 />
               </div>
 
+              <div className="col-md-6">
+                <label htmlFor="user_type" className="form-label text-uppercase small text-white">Tipo de usuario (*)</label>
+                <select
+                  id="user_type"
+                  required
+                  className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
+                   onChange={(e) => (setTipoUserSelected(e.target.value))}
+                >
+                   <option value="" disabled selected> Seleccione una opción</option>
+                  {Array.isArray(UserTypes) && UserTypes.map((UT, index) => (
+
+                    <option key={UT.id} value={UT.id}>{UT.tipo}</option>
+
+                  ))}
+                  
+                </select>
+              </div>
+
+             
               
             </div>
+
+            <div className={` row mt-3 ${showPilotForm ? styles.CustomPilotForm : styles.collapsed}`}>
+                <div className="col-md-6">
+                  <label htmlFor="Arl" className="form-label text-uppercase small text-white">ARL (*)</label>
+                  <input
+                    id="Arl"
+                    type="text"
+                    className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
+                    onChange={(e) => setTelefono(e.target.value)}
+                  />
+                </div>
+
+                <div className="col-md-6">
+                  <label htmlFor="blood_type" className="form-label text-uppercase small text-white">Tipo de sangre (*)</label>
+                  <select
+                    id="blood_type"
+                    className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
+                    // onChange={(e) => setTipoIden(e.target.value)}
+                    defaultValue=""
+                  >
+                    <option value="" disabled selected> Seleccione una opción</option>
+                    {Array.isArray(BloodTypes) && BloodTypes.map((BT, index) => (
+
+                      <option key={BT.id} value={BT.id}>{BT.tipo}</option>
+
+                    ))}
+                    
+                  </select>
+                </div>
+              </div>
 
             <div className="row mt-3">
               <div className="col-md-12">
@@ -210,12 +357,15 @@ function Registro() {
                   required
                   className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
                   onChange={(e) => setPassword(e.target.value)}
+                  placeholder ="Contraseña"
                 />
               </div>
+
+              
             </div>
 
 
-            <div className="row mt-3">
+            <div className="row mt-3 pilot_info">
               <div className="col-md-6">
                 
               <button

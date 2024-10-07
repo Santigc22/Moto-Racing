@@ -31,6 +31,28 @@
 .customBackground{
   background-color: rgb(255 255 255 / 1%);
 }
+
+.customDropdown{
+  background-image: 'url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 4 5%27%3E%3Cpath fill=%27%23444%27 d=%27M2 0L0 2h4z%27/%3E%3C/svg%3E")';
+  background-Repeat: 'no-repeat';
+  background-Position: 'right 1rem center';
+  background-Size: '1rem';
+}
+
+.CustomPilotForm {
+  height: 100%;
+    transition: all 1s cubic-bezier(1, 0, 0, 1);
+    border: solid;
+    border-color: #ffbcbc;
+    border-radius: 30px;
+    box-shadow: 0px 0px 28px 4px rgb(255 0 0);
+    padding: 30px;
+}
+
+.collapsed {
+  height: 0%;
+  display: none;
+}
 /*/////////////////////////////////////////////////*/
 
 @media (prefers-color-scheme: dark) {
