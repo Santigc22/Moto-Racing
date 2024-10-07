@@ -5,9 +5,9 @@ import Registro from './Registro.jsx'
 
 function page() {
   return (
-    <div>
+    
         <Registro />
-    </div>
+   
   )
 }
 

@@ -3,9 +3,15 @@ import styles from "./page.module.css";
 import { useState } from "react";
 import VideoBackground from "./Components/VideoBackground";
 import { useRouter } from "next/navigation";
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 
 
 export default function Home() {
+
+  const [showPass, setShowPass] = useState("Password");
+
+  const [showPassIcon, setShowPassIcon] = useState("bi bi-eye");
 
   const router = useRouter();
 
@@ -23,6 +29,13 @@ export default function Home() {
     setPassword(e);
   }
 
+
+  const showPassHandler = (e) =>
+  {
+    e.preventDefault();
+    setShowPass(showPass=="password" ? "text" : "password" );
+    setShowPassIcon(showPassIcon == "bi bi-eye" ? "bi bi-eye-slash": "bi bi-eye")
+  }
    const SubmitHandler = async (e) =>
    {
     
@@ -85,8 +98,15 @@ export default function Home() {
 
           <div>
             <label htmlFor="password" className="form-label text-uppercase text-white">Contraseña</label>
-            <input onChange={(e)=>{PasswordHandler(e.target.value)}} id="password" required className={`mt-1 form-control rounded border border-gray-200 text-black shadow-sm ${styles.customInput}`} 
-            type="password" name="password"></input>
+            <div className="d-flex">
+            <input onChange={(e)=>{PasswordHandler(e.target.value)}} id="password" required className={`form-control rounded border border-gray-200 mx-1 text-black shadow-sm ${styles.customInput}`} 
+            type={`${showPass}`} name="password"></input>
+
+            <button type="button" onClick={showPassHandler}  className={`btn text-uppercase text-white btn-white border border-gray-200 d-flex align-items-center justify-content-center w-30 ${styles.customHoverEffect}`} style={{height: "38px"}}>
+            <i className={`${showPassIcon}`}></i>
+            </button>
+
+            </div>
           </div>
 
           <br></br>
@@ -95,7 +115,9 @@ export default function Home() {
             Iniciar sesión
           </button>
 
-          <a>Registrate</a>
+          <a href="./registro">
+            ¿No tienes cuenta?
+          </a>
 
           
         </div>
