@@ -96,10 +96,12 @@ export default function Home() {
             .then((responseData) => {
             
             setIdMoto(responseData.response[0]['id'])
-            setPilotoId(responseData.response[0]['propietario_id']);
+            setPilotoId(responseData.response[0]['piloto_id']);
             setMarca(responseData.response[0]['marca']);
             setModelo(responseData.response[0]['modelo']);
             setSoat(responseData.response[0]['soat']);
+            setReferencia(responseData.response[0]['referencia']);
+            setTipoMoto(responseData.response[0]['tipo_moto']);
             setIEstadoActu(true); 
             setIEstadoRegi(false);
             });

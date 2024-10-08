@@ -100,13 +100,14 @@ const setMotos = async (req, res) => {
 			referencia
 		} = req.body;
 
+		console.log(req.body);
 		// Obtener la conexión a la base de datos
 		conexion = await connectDatabase();
 
 		// Ejecutar la consulta SQL
 		await conexion.execute(
-			`INSERT INTO moto (propietario_id, marca, modelo,soat,referencia,tipo_moto) 
-		VALUES (?, ?, ?, ?. ?, ?)`,
+			`INSERT INTO moto (piloto_id, marca, modelo,soat,referencia,tipo_moto) 
+		VALUES (?, ?, ?, ?, ?, ?)`,
 			[
 				pilotoId,
                 marca,
@@ -179,7 +180,7 @@ const updateMoto = async (req, res) => {
 
         await conexion.execute(`UPDATE moto 
 								set marca = ?,
-								propietario_id = ?,
+								piloto_id = ?,
 								modelo = ?,
 								soat = ?,
 								referencia = ?,
