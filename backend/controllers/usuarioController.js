@@ -16,6 +16,14 @@ const parametersUser = Joi.object({
 	tipoUser: Joi.number().max(10).required()
 });
 
+const { sendOtpEmail } = require("../config/mailer");
+
+// Función para generar un código OTP de 6 dígitos
+const generateOTP = () => {
+	return Math.floor(100000 + Math.random() * 900000); // Genera un número entre 100000 y 999999
+};
+
+
 // Controlador para validar usuario y contraseña
 const getUsers = async (req, res) => {
 	try {
@@ -27,7 +35,7 @@ const getUsers = async (req, res) => {
 
 		// Ejecutar la consulta SQL para buscar al usuario por el nombre de usuario
 		const [rows] = await conexion.execute(
-			"SELECT * FROM usuario WHERE identificacion = ?",
+			"SELECT * FROM usuario WHERE correo = ?",
 			[username]
 		);
 
@@ -50,35 +58,38 @@ const getUsers = async (req, res) => {
 
 		// Comparar la contraseña hasheada con la almacenada en la base de datos
 		if (user.password_hash !== hashedPassword) {
+			console.log(user);
 			return res.status(401).json({
 				success: false,
 				message: "Contraseña incorrecta",
 			});
 		}
 
-		var expiresdTime = "1h";
+		// var expiresdTime = "1h";
 
-		const token = jwt.sign(
-			{
-				user_id: user.id,
-				user_name: user.nombre,
-				user_doc: user.identificacion,
-			},
-			process.env.SECRET_TOKEN,
-			{
-				expiresIn: expiresdTime,
-			}
-		);
+		// Generar el OTP
+		const otp = generateOTP();
+		// Guardar el OTP en la base de datos o en una caché temporal para que sea verificado
+		await conexion.execute("UPDATE usuario SET otp = ? WHERE id = ?", [
+			otp,
+			user.id,
+		]);
 
-		res.set("Access-Control-Expose-Headers", "Authorization");
-		res.setHeader("authorization", token);
+		const userEmail = {
+			correo: user.correo, // Asegúrate de que 'user' está correctamente definido
+			nombre: user.nombre,
+			apellido: user.apellido,
+			otp: otp, // Asegúrate de que 'otp' tiene el valor correcto
+		};
+
+		// Enviar el correo electrónico con el OTP
+		await sendOtpEmail(userEmail);
+
 		res.status(200).json({
-			message: "Inicio de sesión exitoso",
+			message: "Contraseña correcta. Se ha enviado un código OTP a tu correo.",
 			user_id: user.id,
 			user_name: user.nombre,
-			user_apellido: user.apellido,
 			user_doc: user.identificacion,
-			authorization: token,
 		});
 
 		// Cerrar la conexión después de la consulta
@@ -176,5 +187,61 @@ const setUsers = async (req, res) => {
 	}
 };
 
+const verifyOTP = async (req, res) => {
+	try {
+		const { correo, otp } = req.body;
+
+		// console.log(correo, otp);
+		const conexion = await connectDatabase();
+		const [rows] = await conexion.execute(
+			"SELECT * FROM usuario WHERE correo = ? AND otp = ?",
+			[correo, otp]
+		);
+
+		if (rows.length === 0) {
+			return res.status(401).json({
+				success: false,
+				message: "Código OTP incorrecto",
+			});
+		}
+
+		// OTP correcto, generar token de sesión
+		const token = jwt.sign(
+			{
+				user_id: rows[0].id,
+				user_email: rows[0].correo,
+				user_name: rows[0].nombre,
+				user_lastname: rows[0].apellido,
+			},
+			process.env.SECRET_TOKEN,
+			{
+				expiresIn: "1h",
+			}
+		);
+
+		res.set("Access-Control-Expose-Headers", "Authorization");
+		res.setHeader("authorization", token);
+		res.status(200).json({
+			message: "Autenticación exitosa",
+			user_id: rows[0].id,
+			user_name: rows[0].nombre,
+			user_lastname: rows[0].apellido,
+			authorization: token,
+		});
+
+		// Limpiar el OTP después de verificarlo
+		await conexion.execute("UPDATE usuario SET otp = NULL WHERE correo = ?", [
+			correo,
+		]);
+		await conexion.end();
+	} catch (error) {
+		console.error("Error al verificar OTP:", error);
+		res.status(500).json({
+			success: false,
+			message: "Error al verificar el OTP",
+		});
+	}
+};
+
 // Exportar el controlador
-module.exports = { getUsers, setUsers };
+module.exports = { getUsers, setUsers, verifyOTP };
