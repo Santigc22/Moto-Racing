@@ -1,0 +1,139 @@
+openapi: "3.0.3"
+info:
+  title: API Title
+  version: "1.0"
+servers:
+  - url: https://api.server.test/v1
+paths:
+  /usuarios/login:
+    post:
+      summary: "Iniciar sesión de usuario"
+      description: "Permite a un usuario iniciar sesión proporcionando su nombre de usuario y contraseña. Si la autenticación es exitosa, se envía un código OTP al correo electrónico del usuario."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "usuario@ejemplo.com"
+                password:
+                  type: string
+                  example: "miContraseñaSegura"
+      responses:
+        "200":
+          description: "Inicio de sesión exitoso, OTP enviado"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Contraseña correcta. Se ha enviado un código OTP a tu correo."
+                  user_id:
+                    type: integer
+                    example: 123
+                  user_name:
+                    type: string
+                    example: "Juan"
+                  user_doc:
+                    type: string
+                    example: "12345678"
+        "401":
+          description: "Usuario no encontrado o contraseña incorrecta"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Usuario no encontrado"
+
+        "500":
+          description: "Error en la consulta de la base de datos"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Error al consultar la base de datos"
+
+  /usuarios/verifyOTP:
+    post:
+      summary: "Verificar OTP de usuario"
+      description: "Verifica el código OTP enviado al correo del usuario. Si es correcto, genera un token de sesión."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                correo:
+                  type: string
+                  example: "usuario@ejemplo.com"
+                otp:
+                  type: string
+                  example: "123456"
+      responses:
+        "200":
+          description: "OTP verificado exitosamente"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Autenticación exitosa"
+                  user_id:
+                    type: integer
+                    example: 123
+                  user_name:
+                    type: string
+                    example: "Juan"
+                  user_lastname:
+                    type: string
+                    example: "Pérez"
+                  authorization:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        "401":
+          description: "Código OTP incorrecto"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Código OTP incorrecto"
+
+        "500":
+          description: "Error al verificar el OTP"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Error al verificar el OTP"
