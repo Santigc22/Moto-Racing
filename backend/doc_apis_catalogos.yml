@@ -1,0 +1,261 @@
+openapi: "3.0.3"
+info:
+  title: Tipos API
+  description: API para gestionar tipos de identificaciones, usuarios, sangre, y ubicaciones geográficas.
+  version: "1.0"
+servers:
+  - url: https://api.server.test/v1
+
+paths:
+  /tipos/tipo_identificacion:
+    get:
+      summary: Obtener tipos de identificación
+      description: Retorna una lista de los tipos de identificación disponibles.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        descripcion:
+                          type: string
+        "500":
+          description: Error interno del servidor
+
+  /tipos/tipo_usuario:
+    get:
+      summary: Obtener tipos de usuario
+      description: Retorna una lista de los tipos de usuario disponibles.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        tipo:
+                          type: string
+        "500":
+          description: Error interno del servidor
+
+  /tipos/tipo_sangre:
+    get:
+      summary: Obtener tipos de sangre
+      description: Retorna una lista de los tipos de sangre disponibles.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        grupo:
+                          type: string
+                        factor:
+                          type: string
+        "500":
+          description: Error interno del servidor
+
+  /tipos/pais:
+    get:
+      summary: Obtener lista de países
+      description: Retorna una lista de los países disponibles.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        nombre:
+                          type: string
+        "500":
+          description: Error interno del servidor
+
+  /tipos/departamento/{id_pais}:
+    get:
+      summary: Obtener departamentos de un país
+      description: Retorna una lista de departamentos correspondientes a un país específico.
+      parameters:
+        - name: id_pais
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del país para obtener los departamentos.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        nombre:
+                          type: string
+        "500":
+          description: Error interno del servidor
+
+  /tipos/ciudad/{id_departamento}:
+    get:
+      summary: Obtener ciudades de un departamento
+      description: Retorna una lista de ciudades correspondientes a un departamento específico.
+      parameters:
+        - name: id_departamento
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del departamento para obtener las ciudades.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        nombre:
+                          type: string 
+        "500":
+          description: Error interno del servidor
+  /tipos/competencias:
+     get:
+      summary: Obtener todas las competencias
+      description: Recupera todas las competencias de carreras de motos desde la base de datos.
+      responses:
+        "200":
+          description: Lista de competencias obtenida correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id_competencia:
+                          type: integer
+                          example: 1
+                        nombre:
+                          type: string
+                          example: MotoGP
+                        descripcion:
+                          type: string
+                          example: Competencia de carreras en circuito de alta velocidad
+        "500":
+          description: Error al consultar la base de datos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Error al consultar la base de datos
+  /tipos/categoria_carrera:
+     get:
+      summary: Obtener todas las categorías de carrera
+      description: Recupera todas las categorías de carrera de motos según cilindrada desde la base de datos.
+      responses:
+        "200":
+          description: Lista de categorías de carreras obtenida correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        cilindrada:
+                          type: string
+                          example: 1000cc
+        "500":
+          description: Error al consultar la base de datos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Error al consultar la base de datos"
