@@ -6,6 +6,7 @@ const app = express();
 const usuarioRoutes = require("./routes/usuario_routes");
 const s3 = require("./routes/S3");
 const tiposRouter = require("./routes/tipos_routes");
+const equiposRouter = require("./routes/equipo_routes");
 app.use(express.json());
 
 app.use(cors());
@@ -23,6 +24,7 @@ app.use("/tipos", tiposRouter);
 
 app.use("/usuarios", usuarioRoutes);
 app.use("/s3", s3);
+app.use("/equipos", equiposRouter);
 
 
 const PORT = process.env.PORT ;
