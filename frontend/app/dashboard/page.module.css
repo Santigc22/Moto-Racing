@@ -20,6 +20,53 @@
   
   /*//////////////////DASHBOARD///////////////////////*/
 
+  .customCarouselText {
+    position: absolute;
+    bottom: 20px;
+    left: 110px;
+    color: white;
+    font-size: 24px;
+    z-index: 4;
+    font-family: fantasy;
+    font-size: 80px;
+    letter-spacing: 1px;
+    background: linear-gradient(to top, rgb(0, 0, 0), #ffffff);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .customCarouselSlide{
+    border-bottom: solid;
+    border-color: #000000;
+    box-shadow: 0 -8px 55px 62px black;
+  }
+
+  .customCarouselInner{
+    background: black;
+  }
+  
+  .customCarouselItem{
+    position: relative;
+  }
+
+  .customCarouselItem::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60%; /* Ajusta el tamaño de la cobertura */
+    background: linear-gradient(to top, rgb(0, 0, 0), transparent); /* Gradiente de negro a transparente */
+    pointer-events: none; /* Asegura que no interfiera con los controles del carrusel */
+
+  }
+  
+  .customCraouselImg{
+    height: 70vh !important;
+    width: auto;
+    position: relative;
+    left: 28%;
+  }
   
   /*/////////////////////////////////////////////////*/
   
