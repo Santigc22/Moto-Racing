@@ -13,7 +13,8 @@ const parametersUser = Joi.object({
 	telefono: Joi.string().max(19).required(),
 	identificacion: Joi.string().max(10).required(),
 	password: Joi.string().max(255).required(),
-	tipoUser: Joi.number().max(10).required()
+	tipoUser: Joi.number().max(10).required(),
+	correo: Joi.string().max(255).required()
 });
 
 const { sendOtpEmail } = require("../config/mailer");
@@ -107,7 +108,7 @@ const getUsers = async (req, res) => {
 const setUsers = async (req, res) => {
 	let conexion = null; // Inicializar la conexión como null
 
-	
+
 
 	try {
 		// Obtener los datos del cuerpo de la solicitud
@@ -120,7 +121,8 @@ const setUsers = async (req, res) => {
 			telefono,
 			identificacion,
 			password,
-			tipoUser
+			tipoUser,
+			correo
 		} = req.body;
 	
 		console.log(req.body);
@@ -135,7 +137,8 @@ const setUsers = async (req, res) => {
 			telefono,
 			identificacion,
 			password,
-			tipoUser
+			tipoUser,
+			correo
 		})
 
 		if(error)
@@ -151,10 +154,11 @@ const setUsers = async (req, res) => {
 
 		// Ejecutar la consulta SQL para insertar el usuario
 		await conexion.execute(
-			`INSERT INTO usuario (nombre, apellido, tipo_identificacion_id, identificacion, 
+			`INSERT INTO usuario (correo, nombre, apellido, tipo_identificacion_id, identificacion, 
 		  fecha_nacimiento, direccion, telefono, password_hash, is_admin, id_tipo_usuario) 
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)`,
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 			[
+				correo,
 				nombre,
 				apellido,
 				tipoIden,

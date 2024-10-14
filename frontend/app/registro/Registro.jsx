@@ -19,6 +19,8 @@ function Registro() {
   const [tipoUser, setTypeUserSelected] = useState();
   const [showPilotForm, setShowPilotForm] = useState();
 
+  const [correo, setCorreo] = useState("");
+
   const showForm = () =>
   {
    
@@ -119,9 +121,23 @@ function Registro() {
       !direccion ||
       !telefono ||
       !password ||
-      !tipoUser
+      !tipoUser ||
+      !correo
     ) {
       alert("Todos los campos son obligatorios.");
+      console.log({
+        nombre,
+          apellido,
+          tipoIden,
+          fechaNaci,
+          direccion,
+          telefono,
+          identificacion,
+          password,
+          tipoUser,
+          correo
+
+      })
       return false;
     }
     return true;
@@ -135,10 +151,11 @@ function Registro() {
     }
 
     try {
-      await fetch('https://moto-racing.onrender.com/usuarios/setUser', {
+      const response = await fetch('https://moto-racing.onrender.com/usuarios/setUser', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          
           nombre,
           apellido,
           tipoIden,
@@ -147,22 +164,35 @@ function Registro() {
           telefono,
           identificacion,
           password,
-          tipoUser
+          tipoUser,
+          correo
+
         }),
       })
-        .then((res) => res.json())
-        .then((responseData) => {
 
-          setNombre("");
-          setApellido("");
-          setTipoIden("");
-          setIdentificacion("");
-          setFechaNaci("");
-          setDireccion("");
-          setTelefono("");
-          setPassword("");
-          setTypeUserSelected("");
-        });
+      if (response.ok) {
+        // Limpiar los campos del formulario
+        setNombre("");
+        setApellido("");
+        setTipoIden("");
+        setIdentificacion("");
+        setFechaNaci("");
+        setDireccion("");
+        setTelefono("");
+        setPassword("");
+        setTypeUserSelected("");
+        setCorreo("");
+  
+        // Redirigir al login
+        goToLogin();
+      } else {
+        // Manejo de errores si la respuesta no es exitosa
+        console.log("Error al enviar los datos");
+      }
+        
+       
+       
+        
     } catch (err) {
       console.error("Error al hacer la solicitud:", err);
     }
@@ -229,8 +259,9 @@ function Registro() {
                   required
                   className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
                   onChange={(e) => setTipoIden(e.target.value)}
+                  defaultValue={""}
                 >
-                   <option value="" disabled selected> Seleccione una opción</option>
+                   <option value="" disabled > Seleccione una opción</option>
                   {Array.isArray(IdentificationTypes) && IdentificationTypes.map((IT, index) => (
 
                     <option key={IT.id} value={IT.id}>{IT.nombre} | ({IT.nombre_corto})</option>
@@ -300,8 +331,9 @@ function Registro() {
                   required
                   className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
                    onChange={(e) => setTypeUserSelected(e.target.value)}
+                   defaultValue={""}
                 >
-                   <option value="" disabled selected> Seleccione una opción</option>
+                   <option value="" disabled > Seleccione una opción</option>
                   {Array.isArray(UserTypes) && UserTypes.map((UT, index) => (
 
                     <option key={UT.id} value={UT.id}>{UT.tipo}</option>
@@ -332,7 +364,7 @@ function Registro() {
                     id="blood_type"
                     className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
                     // onChange={(e) => setTipoIden(e.target.value)}
-                    defaultValue=""
+                    defaultValue={""}
                   >
                     <option value="" disabled selected> Seleccione una opción</option>
                     {Array.isArray(BloodTypes) && BloodTypes.map((BT, index) => (
@@ -346,7 +378,19 @@ function Registro() {
               </div>
 
             <div className="row mt-3">
-              <div className="col-md-12">
+            <div className="col-md-6">
+                <label htmlFor="correo" className="form-label text-uppercase small text-white">Correo (*)</label>
+                <input
+                  id="correo"
+                  type="email"
+                  required
+                  className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
+                  onChange={(e) => setCorreo(e.target.value)}
+                  placeholder ="motoRacing@dominio.com"
+                />
+              </div>
+
+              <div className="col-md-6">
                 <label htmlFor="password" className="form-label text-uppercase small text-white">Contraseña (*)</label>
                 <input
                   id="password"

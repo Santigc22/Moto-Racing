@@ -3,9 +3,12 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useState } from "react";
 import Link from 'next/link';
 import  './NavBar.css'
+import { useRouter } from 'next/navigation';
 
 
 function NavBar() {
+
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState("");
 
   const [isCollapsed, SetIsCollapsedSidebar] = useState(false);
@@ -13,6 +16,11 @@ function NavBar() {
   const ToggleSidebarCollapseHandler =()=>
   {
       SetIsCollapsedSidebar((prev) => !prev);
+  }
+
+  const OutSession = () =>
+  {
+    router.push("/")
   }
 
 
@@ -23,35 +31,45 @@ function NavBar() {
         icon: <i className="bi bi-house"></i>
     },
     {
-        name: "Administradores",
-        href: "/administradores",
+        name: "Competiciónes NF",
+        href: "",
         icon: <i className="bi bi-person-badge-fill"></i>
     },
     {
-        name: "Oportunidades",
+        name: "Carreras NF",
         href: "/oportunities",
         icon: <i className="bi bi-briefcase"></i>
     },
     {
-        name: "Organizaciónes",
+        name: "Pistas NF",
         href: "/organizaciones",
         icon: <i className="bi bi-building"></i>
     },
     {
-        name:"Postulantes",
+        name:"Pilotos NF",
         href:"/postulantes",
         icon: <i className="bi bi-people-fill"></i>
     },
     {
-        name:"Practicas",
+        name:"Equipos NF",
         href:"/practicas",
         icon: <i className="bi bi-clipboard-check"></i>
     },
     {
-        name:"legalizaciones",
+        name:"Patrocinadores NF",
         href:"/legalizaciones",
         icon:<i className="bi bi-pencil"></i>
     },
+    {
+      name:"Patrocinios NF",
+      href:"/legalizaciones",
+      icon:<i className="bi bi-pencil"></i>
+    },
+    {
+      name:"Patrocinadores 4NF",
+      href:"/legalizaciones",
+      icon:<i className="bi bi-pencil"></i>
+  },
     {
         name: "Cerrar sesión",
         href:"/",
@@ -97,7 +115,7 @@ function NavBar() {
     
       <div  className={`d-flex align-items-center col-3 justify-content-end`}>
 
-        <button className={`EndSession-btn`}>
+        <button className={`EndSession-btn`} onClick={OutSession}>
 
         <i class="bi bi-box-arrow-right text-danger fs-1 "></i>
 
