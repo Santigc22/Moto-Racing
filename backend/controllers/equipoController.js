@@ -15,14 +15,17 @@ const parametersTeam = Joi.object({
 const getTeams = async (req, res) => {
     try {
         // Obtener los valores de los query parameters (opcionales)
-        const { teamName = '', teamOwner = '' } = req.query;
+        const { teamName = '', teamOwner = '', resultsPerPage = 10, page = 1 } = req.query;
+
+        const limit = Number.isInteger(parseInt(resultsPerPage)) ? parseInt(resultsPerPage) : 10;
+        const offset = Number.isInteger(parseInt(page)) ? (parseInt(page) - 1) * limit : 0;
 
         // Obtener la conexión a la base de datos
 		const conexion = await connectDatabase();
 
         // Consulta base
         let query = `
-            SELECT equipo.id, equipo.nombre, CONCAT(usuario.nombre, ' ', usuario.apellido) AS representante_nombre, attachment.path AS logo_path, equipo.extra_por_patrocinio
+            SELECT equipo.id, equipo.nombre, CONCAT(usuario.nombre, ' ', usuario.apellido) AS representante, attachment.path AS logo_path, equipo.extra_por_patrocinio
             FROM equipo
             LEFT JOIN usuario ON equipo.representante_id = usuario.id
             LEFT JOIN attachment ON equipo.logo_id = attachment.id
@@ -47,11 +50,35 @@ const getTeams = async (req, res) => {
             query += ` WHERE ` + filters.join(' AND ');
         }
 
+        // Añadir paginación a la consulta
+        query += ` LIMIT ${limit} OFFSET ${offset}`;
+
         // Realizar la consulta a la base de datos
         const [rows] = await conexion.execute(query, params);
 
+        // Consulta para acomodar los resultados
+        let countQuery = `
+            SELECT COUNT(*) AS total 
+            FROM equipo 
+            LEFT JOIN usuario ON equipo.representante_id = usuario.id
+            LEFT JOIN attachment ON equipo.logo_id = attachment.id
+        `;
+
+        let countParams = [...params.slice(0, filters.length)];
+
+        if (filters.length > 0) {
+            countQuery += ` WHERE ` + filters.join(' AND ');
+        }
+
+        // Realizar la consulta a la base de datos con los datos acomodados
+        const [[{ total }]] = await conexion.execute(countQuery, countParams);
+
         res.status(200).json({
             equipos: rows,
+            totalResults: total,
+            totalPages: Math.ceil(total / limit),
+            currentPage: parseInt(page),
+            resultsPerPage: limit,
         });
 
         // Cerrar conexión bd una vez hecha la consulta
@@ -59,7 +86,6 @@ const getTeams = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(400).json({
-            success: false,
             message: "Error al obtener los equipos",
             error: error.message
         })
