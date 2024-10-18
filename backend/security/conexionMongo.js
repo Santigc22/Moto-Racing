@@ -25,6 +25,6 @@ async function connectDatabase() {
 
 // Conectar a la base de datos
 connectDatabase();
-const conexionDB = conexion.db("elegaNNza");
+const conexionDB = conexion.db("MotoRacing");
 // Exportar el cliente MongoDB para su uso en otros archivos
 module.exports = conexionDB;

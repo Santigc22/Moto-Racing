@@ -3,13 +3,14 @@ const patrociniosRouter = express.Router();
 
 // Importar el controlador
 const {
-	partePatrocinio,
-	insertPatrocinio,
+	partesPilotoPatrocinio,
+	createPatrocinioPiloto,
 } = require("../controllers/patrocinios_controller");
 
 // Rutas
-patrociniosRouter.get("/:entidad", partePatrocinio);
 
-patrociniosRouter.post("/insert_patrocinios", insertPatrocinio);
+patrociniosRouter.get("/partes_piloto/:id_piloto", partesPilotoPatrocinio);
+
+patrociniosRouter.post("/create_patrocinio_piloto", createPatrocinioPiloto);
 
 module.exports = patrociniosRouter;
