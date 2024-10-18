@@ -209,22 +209,3 @@ module.exports = {
 	partesPilotoPatrocinio,
 	createPatrocinioPiloto,
 };
-// {
-//         "id_patrocinador":1,
-//         "logo_id_patrocinador":13,
-//         "id_entidad": 1,
-//         "partes_patrocinio": [
-//             {
-//                 "id_parte": 1,
-//                 "nombre":"El patrocinador da nombre a toda la competencia",
-//                 "precio": 10000
-//             }, {
-//                 "id_parte": 2,
-//                 "nombre":"Rueda de Prensa Oficial",
-//                 "precio": 4000
-//             }
-//         ],
-//         "subtotal":14000,
-//         "porcentaje_aumento_entidad":"10%",
-//         "total":15400
-//     }
