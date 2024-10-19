@@ -5,7 +5,8 @@ const equiposRouter = express.Router();
 const {
     getTeams,
     getTeam,
-    registerTeam
+    registerTeam,
+    updateTeam
 } = require("../controllers/equipoController");
 
 // Ruta para obtener equipos
@@ -16,5 +17,8 @@ equiposRouter.get("/:equipo_id", getTeam);
 
 // Ruta para registrar un nuevo equipo
 equiposRouter.post("/", registerTeam);
+
+// Ruta para actualizar un campo o varios de un equipo
+equiposRouter.patch("/:equipo_id", updateTeam);
 
 module.exports = equiposRouter;

@@ -12,6 +12,13 @@ const teamSchema = Joi.object({
     extra_por_patrocinio: Joi.number().required()
 });
 
+const updateTeamSchema = Joi.object({
+    nombre: Joi.string().max(255),
+    representante_id: Joi.number(),
+    logo_id: Joi.number(),
+    extra_por_patrocinio: Joi.number(),
+}).or('nombre', 'representante_id', 'logo_id', 'extra_por_patrocinio');
+
 // Función para obtener equipos
 const getTeams = async (req, res) => {
     try {
@@ -216,7 +223,95 @@ const registerTeam = async (req, res) => {
             error: error.message
         });
     }
-}
+};
+
+const updateTeam = async (req, res) => {
+    try {
+        // Obtener el id del equipo
+        const { equipo_id } = req.params;
+        const { error, value } = updateTeamSchema.validate(req.body);
+
+        if (error) {
+            return res.status(400).json({
+                success: false,
+                message: "Datos invalidos.",
+                error: error.details[0].message
+            });
+        }
+
+        // Obtener la conexión a la base de datos
+        const conexion = await connectDatabase();
+
+        // Verificar si el nombre de equipo existe
+        const [team] = await conexion.execute(
+            `SELECT * FROM equipo WHERE id = ?`, 
+            [equipo_id]
+        );
+
+        if (team.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "El equipo no existe."
+            });
+        }
+
+        // Capturar los valores a actualizar
+        const updates = value;
+        const fieldsToUpdate = [];
+        const params = [];
+
+        // Validar que si se actualiza el nombre, este no puede ser uno existente
+        if (updates.nombre) {
+            const [existingTeam] = await conexion.execute(
+                `SELECT * FROM equipo WHERE nombre = ? AND id != ?`,
+                [updates.nombre, equipo_id]
+            );
+
+            if (existingTeam.length > 0) {
+                return res.status(409).json({
+                    success: false,
+                    message: "Este nombre ya se encuentra en uso."
+                });
+            }
+        }
+
+        // Construir la consulta dinámica
+        for (const key in updates) {
+            if (updates[key] !== undefined) {
+                fieldsToUpdate.push(`${key} = ?`);
+                params.push(updates[key]);
+            }
+        }
+
+        // Ejecutar la consulta si hay campos para actualizar
+        if (fieldsToUpdate.length > 0) {
+            params.push(equipo_id);
+            const query = `UPDATE equipo SET ${fieldsToUpdate.join(', ')} WHERE id = ?`;
+
+            await conexion.execute(query, params);
+
+            res.status(200).json({
+                success: true,
+                message: "Equipo actualizado satisfactoriamente.",
+                id: equipo_id
+            });
+        } else {
+            res.status(400).json({
+                success: false,
+                message: "No se proporcionaron campos para actualizar"
+            });
+        }
+
+        // Cerrar la conexión a la base de datos
+        await conexion.end();
+    } catch (error) {
+        res.status(409).json({
+            success: false,
+            message: "Error al actualizar el equipo",
+            error: error.message
+        });
+    }
+};
 
 // Exportar controladores
-module.exports = { getTeams, getTeam, registerTeam };
+module.exports = { getTeams, getTeam, registerTeam, updateTeam };
