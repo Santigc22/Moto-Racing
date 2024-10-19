@@ -9,13 +9,15 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"bcrypt": "^5.1.1",
 		"aws-sdk": "^2.1691.0",
+		"bcrypt": "^5.1.1",
 		"cors": "^2.8.5",
 		"crypto-js": "^4.2.0",
 		"express": "^4.21.0",
 		"joi": "^17.13.3",
 		"jsonwebtoken": "^9.0.2",
+		"mongodb": "^6.9.0",
+		"multer": "^1.4.5-lts.1",
 		"mysql2": "^3.11.3",
 		"nodemailer": "^6.9.15",
 		"nodemon": "^3.1.4"
