@@ -1,10 +1,12 @@
 import React from 'react'
-import Registro from './registro'
+import Dasboard from './Dashboard'
 
 function page() {
   return (
     <div>
-        <Registro />
+
+    <Dasboard />
+
     </div>
   )
 }

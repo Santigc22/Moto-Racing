@@ -1,0 +1,123 @@
+.menu-btn{
+
+    border: none;
+    background-color: transparent;
+    color: white;
+    width: 24px;
+    height: 24px;
+    min-height: 24px;
+    min-height: 24px;
+
+    
+}
+
+.menu-btn :hover
+{
+  box-shadow: 0px 0px 2px 2px rgb(255, 3, 3);
+  border-radius:30px;
+  width: 1.5rem;
+  height: 1.5rem;
+  
+}
+
+.NavBar{
+    height: 64px;
+    position: fixed;
+    top: 0;
+    backdrop-filter: blur(10px); /* Desenfoque */
+    background-color: rgba(0, 0, 0, 0.8); /* Fondo semi-transparente */
+    z-index: 1000; /* Asegura que la barra esté por encima de otros elementos */
+}
+
+.EndSession-btn{
+
+    border: none;
+    background-color: transparent;
+    color: white;
+    width: auto;
+    height: auto;
+    min-height: 24px;
+    min-height: 24px;
+
+}
+
+.sidebar
+{
+  width: 17rem;
+  height: 100%;
+  background-color: white;
+  padding: 1rem;
+  transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.sidebar__top{
+width: max-content;
+display: flex;
+align-items: center;
+gap: 1rem;
+padding-bottom: 1rem;
+margin-bottom: 1rem;
+border-bottom: 1px solid #e5e7eb;
+}
+
+.sidebar__logo
+{
+  width: 3.4rem;
+  height: 3.5rem;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+.sidebar__list
+{
+  list-style: none;
+  padding-left: 0px;
+}
+.sidebar__link
+{
+  display: inline-block;
+  font-size: 1rem;
+  text-decoration: none;
+  color: #000;
+  padding: 0.8rem 1rem;
+  display: flex;
+  background-color: #f3f4f6;
+  margin-bottom: 1rem;
+  border-radius: 0.8rem;
+}
+
+.sidebar__icon
+{
+  margin: 10px;
+  font-size: 1.2rem;
+  display: inline-block;
+}
+
+.sidebar__name
+{
+  margin-left: 0.5rem;
+}
+.sidebar_logo_name{
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.layoutBase
+{
+  display: flex;
+  gap: 2rem;
+  box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.473);
+}
+.sidebar__wrapper
+{
+  position: absolute;
+  top: 100%;
+}
+[data-collapse="true"]
+{
+  width: 5.3rem;
+
+}
+[data-collapse="true"] .sidebar__name
+{
+  display: none;
+}
