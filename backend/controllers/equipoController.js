@@ -92,5 +92,49 @@ const getTeams = async (req, res) => {
     }
 };
 
+// Función para obtener un equipo en específico
+const getTeam = async (req, res) => {
+    try {
+        // Captar el path param (id)
+        const { equipo_id } = req.params;
+
+        // Obtener conexión a la base de datos
+        const conexion = await connectDatabase();
+
+        // Consulta SQL para obtener el equipo por su id
+        const [rows] = await conexion.execute(
+            `SELECT equipo.id, equipo.nombre, CONCAT(usuario.nombre, ' ', usuario.apellido) AS representante_nombre, attachment.path AS logo_path, equipo.extra_por_patrocinio
+             FROM equipo
+             LEFT JOIN usuario ON equipo.representante_id = usuario.id
+             LEFT JOIN attachment ON equipo.logo_id = attachment.id
+             WHERE equipo.id = ?`, 
+             [equipo_id]
+        );
+
+        // Si no se enceuntra, retornar NOT FOUND
+        if (rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Equipo no encontrado"
+            });
+        }
+
+        // Respuesta exitosa
+        res.status(200).json({
+            equipo: rows[0]
+        });
+
+        // Cerrar conexión a la base de datos
+        await conexion.end();
+    } catch (error) {
+        //Respuesta negativa
+        res.status(400).json({
+            success: false,
+            message: "Error al obtener el equipo",
+            error: error.message
+        });
+    }
+};
+
 // Exportar controladores
-module.exports = { getTeams };
+module.exports = { getTeams, getTeam };
