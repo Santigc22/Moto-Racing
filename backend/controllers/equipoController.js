@@ -4,11 +4,12 @@ const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 
-const parametersTeam = Joi.object({
+// Validación para inserciones en la tabla
+const teamSchema = Joi.object({
     nombre: Joi.string().max(255).required(),
-    representante: Joi.number().required(),
-    logo: Joi.number().required(),
-    extra: Joi.number().required()
+    representante_id: Joi.number().required(),
+    logo_id: Joi.number().required(),
+    extra_por_patrocinio: Joi.number().required()
 });
 
 // Función para obtener equipos
@@ -136,5 +137,86 @@ const getTeam = async (req, res) => {
     }
 };
 
+const registerTeam = async (req, res) => {
+    try {
+        // Validar datos a insertar
+        const { error, value } = teamSchema.validate(req.body);
+        if (error) {
+            return res.status(400).json({
+                success: false,
+                message: "Parámetros inválidos",
+                error: error.details[0].message
+            });
+        }
+
+        const { nombre, representante_id, logo_id, extra_por_patrocinio } = value;
+
+        // Obtener conexión con la base de datos
+        const conexion = await connectDatabase();
+
+        // Verificar que el usuario representante existe
+        const [representante] = await conexion.execute(
+            `SELECT id FROM usuario WHERE id = ?`, 
+            [representante_id]
+        );
+
+        if (representante.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "El representante no fue encontrado, revise la existencia de este."
+            });
+        }
+
+        // Verificar que el logo existe
+        const [logo] = await conexion.execute(
+            `SELECT id FROM attachment WHERE id = ?`, 
+            [logo_id]
+        );
+
+        if (logo.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "El logo no fue encontrado, revise la existencia de este."
+            });
+        }
+
+        // Verificar que el nombre de equipo es único
+        const [existingTeam] = await conexion.execute(
+            `SELECT id FROM equipo WHERE nombre = ?`, 
+            [nombre]
+        );
+
+        if (existingTeam.length > 0) {
+            return res.status(409).json({
+                success: false,
+                message: "Ya existe un equipo con este nombre."
+            });
+        }
+
+        // Realizar la inserción del nuevo equipo
+        const [result] = await conexion.execute(
+            `INSERT INTO equipo (nombre, representante_id, logo_id, extra_por_patrocinio) VALUES (?, ?, ?, ?)`,
+            [nombre, representante_id, logo_id, extra_por_patrocinio]
+        );
+
+        // Respuesta exitosa
+        res.status(201).json({
+            success: true,
+            message: "Equipo creado satisfactoriamente.",
+            id: result.insertId
+        });
+
+        // Cerrar conexión a la base de datos
+        await conexion.end();
+    } catch (error) {
+        // Respuesta fallida
+        res.status(409).json({
+            success: false,
+            message: "Error al intentar insertar un nuevo equipo",
+            error: error.message
+        });
+    }
+}
+
 // Exportar controladores
-module.exports = { getTeams, getTeam };
+module.exports = { getTeams, getTeam, registerTeam };
