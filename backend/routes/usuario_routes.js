@@ -2,7 +2,11 @@ const express = require("express");
 const router = express.Router();
 
 // Importar el controlador
-const { getUsers, setUsers } = require("../controllers/usuarioController");
+const {
+	getUsers,
+	setUsers,
+	verifyOTP,
+} = require("../controllers/usuarioController");
 
 const { cookieJwtAuthGeneral } = require("../security/AuthMiddleware");
 
@@ -11,5 +15,8 @@ router.post("/login", getUsers);
 
 // Ruta para crear usuarios
 router.post("/setUser", setUsers);
+
+// Ruta para verificar OTP
+router.post("/verifyOTP", verifyOTP);
 
 module.exports = router;

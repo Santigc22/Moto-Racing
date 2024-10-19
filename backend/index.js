@@ -26,6 +26,9 @@ const storage = multer.diskStorage({
 // Crear el middleware de Multer
 const upload = multer({ storage: storage });
 // const conectarDB = require("./security/conexionMongo");
+
+const equiposRouter = require("./routes/equipo_routes");
+
 app.use(express.json());
 
 app.use(cors());
@@ -43,8 +46,10 @@ app.use("/tipos", tiposRouter);
 app.use("/patrocinios", patrociniosRouter);
 app.use("/usuarios", usuarioRoutes);
 app.use("/s3", s3);
+app.use("/equipos", equiposRouter);
 
 const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
 	console.log(`Servidor iniciado en el puerto http://localhost:${PORT}`);
 });

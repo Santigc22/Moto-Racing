@@ -1,61 +1,19 @@
-"use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-
-export default function Home() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const router = useRouter(); 
-
-  const validateLogin = async () => {
-    try {
-      fetch(`http://localhost:3001/usuarios/getUserLogin`, {
-        method: 'POST',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username,
-          password,
-        }),
-      })
-        .then((res) => res.json())
-        .then((responseData) => {
-          console.log(responseData);
-          alert(responseData["message"]);
-        });
-    } catch (err) {
-      console.error("Error al hacer la solicitud:", err);
-    }
-  };
-
-  const goToRegisterPage = () => {
-    router.push('/registerUser'); // Navega a la página RegisterUser
-  };
-
-  return (
-    <div className="d-flex flex-column align-items-center vh-100 justify-content-center">
-      <main className="main">
-        <div className="position-relative vw-75 overflow-hidden rounded border border-gray-100 shadow-lg">
-          <div className="d-flex flex-column align-middle justify-content-center border-bottom border-gray-200 bg-white px-5 py-2 pt-4 text-center">
-            <h3 className="h5 font-weight-bold">Inicio de sesión</h3>
-            <p className="small text-muted">Usa tu correo y contraseña para acceder</p>
-          </div>
-
-          <div className="d-flex flex-column gap-1 bg-light px-5 py-4 px-sm-5">
-            <label htmlFor="username_input" className="form-label text-uppercase fs- text-muted">Identificacion</label>
-            <input
-              id="username_input"
-              type="number"
-              required
-              className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm text-gray-200"
-              onChange={(e) => setUsername(e.target.value)}
-            />
 'use client'
 import styles from "./page.module.css";
 import { useState } from "react";
 import VideoBackground from "./Components/VideoBackground";
+import { useRouter } from "next/navigation";
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 
 
 export default function Home() {
+
+  const [showPass, setShowPass] = useState("Password");
+
+  const [showPassIcon, setShowPassIcon] = useState("bi bi-eye");
+
+  const router = useRouter();
 
   const [username, setUsername] = useState("");
 
@@ -71,6 +29,46 @@ export default function Home() {
     setPassword(e);
   }
 
+
+  const showPassHandler = (e) =>
+  {
+    e.preventDefault();
+    setShowPass(showPass=="password" ? "text" : "password" );
+    setShowPassIcon(showPassIcon == "bi bi-eye" ? "bi bi-eye-slash": "bi bi-eye")
+  }
+   const SubmitHandler = async (e) =>
+   {
+    
+     e.preventDefault();
+     try {
+
+       const response = await fetch('https://moto-racing.onrender.com/usuarios/login', 
+         {
+           method: 'POST',
+           body: JSON.stringify(
+             {
+               username: username, 
+               password: Password
+             }),
+             headers: {
+               'content-type': 'application/json'
+             }
+         });
+
+         if (response.ok) {
+          router.push("/dashboard");
+        } else {
+          alert("Algo ha salido mal");
+        }
+
+         console.log(response.json);
+      
+     } catch (error) {
+       console.log(error);
+     }
+    
+  }
+
   return (
 
    
@@ -81,7 +79,7 @@ export default function Home() {
        <VideoBackground/>
       <main className={styles.main}>
 
-        <form className={`position-relative vw-75 overflow-hidden rounded border border-gray-100 ${styles.customShadow}`}>
+        <form onSubmit={(e) =>SubmitHandler(e)} className={`position-relative vw-75 overflow-hidden rounded border border-gray-100 ${styles.customShadow}`}>
 
         <div className={`d-flex flex-column align-middle justify-content-center border-bottom border-gray-200 px-5 py-2 pt-4 text-center ${styles.customBackground}`}>
           <h3 className="h5 text-white text-uppercase font-weight-bold">Inicio de sesión</h3>
@@ -96,58 +94,37 @@ export default function Home() {
           className={`mt-1 form-control rounded border border-gray-200 shadow-sm text-black ${styles.customInput}`}
           ></input>
 
-            <br></br>
+          <br></br>
 
-            <div>
-              <label htmlFor="password" className="form-label text-uppercase small text-muted">Contraseña</label>
-              <input
-                id="password"
-                required
-                className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
-                type="password"
-                name="password"
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
           <div>
             <label htmlFor="password" className="form-label text-uppercase text-white">Contraseña</label>
-            <input onChange={(e)=>{PasswordHandler(e.target.value)}} id="password" required className={`mt-1 form-control rounded border border-gray-200 text-black shadow-sm ${styles.customInput}`} 
-            type="password" name="password"></input>
-          </div>
+            <div className="d-flex">
+            <input onChange={(e)=>{PasswordHandler(e.target.value)}} id="password" required className={`form-control rounded border border-gray-200 mx-1 text-black shadow-sm ${styles.customInput}`} 
+            type={`${showPass}`} name="password"></input>
 
-            <br></br>
-
-            <button
-              type="submit"
-              aria-disabled="false"
-              className="btn btn-success border border-gray-200 d-flex align-items-center justify-content-center w-100"
-              style={{ height: "40px" }}
-              onClick={validateLogin}
-            >
-              Iniciar sesión
+            <button type="button" onClick={showPassHandler}  className={`btn text-uppercase text-white btn-white border border-gray-200 d-flex align-items-center justify-content-center w-30 ${styles.customHoverEffect}`} style={{height: "38px"}}>
+            <i className={`${showPassIcon}`}></i>
             </button>
 
-            <button
-              type="button"
-              aria-disabled="false"
-              className="btn btn-primary border border-gray-200 d-flex align-items-center justify-content-center w-100"
-              style={{ height: "40px", marginTop: "20px" }}
-              onClick={goToRegisterPage}
-            >
-              registrarse
-            </button>
+            </div>
           </div>
-        </div>
+
+          <br></br>
+
           <button type="submit" aria-disabled="false" className={`btn text-uppercase text-white btn-white border border-gray-200 d-flex align-items-center justify-content-center w-100 ${styles.customHoverEffect}`} style={{height: "40px"}}>
             Iniciar sesión
           </button>
 
-          <a></a>
+          <a href="./registro">
+            ¿No tienes cuenta?
+          </a>
 
           
         </div>
       </form>
 
+      
+     
 
       </main>
     </div>
