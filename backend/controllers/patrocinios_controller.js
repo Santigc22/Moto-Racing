@@ -4,6 +4,8 @@ const conectMongo = require("../security/conexionMongo");
 
 const joi = require("joi");
 
+const { sendEmail } = require("../config/mailer");
+
 const schemaPatrocinioInsert = joi.object({
 	id_entidad: joi.number().required(),
 	partes_patrocinio: joi.array().items(
@@ -13,22 +15,7 @@ const schemaPatrocinioInsert = joi.object({
 			precio: joi.number().required(),
 		})
 	),
-	subtotal: joi.number().required(),
-	porcentaje_aumento_entidad: joi.string().required(),
-	total: joi.number().required(),
-});
-
-const schemaPatrocinioCollection = joi.object({
-	id_patrocinador: joi.number().required(),
-	logo_id_patrocinador: joi.number().required(),
-	id_entidad: joi.number().required(),
-	partes_patrocinio: joi.array().items(
-		joi.object({
-			id_parte: joi.number().required(),
-			nombre: joi.string().required(),
-			precio: joi.number().required(),
-		})
-	),
+	logo_id: joi.number().required(),
 	subtotal: joi.number().required(),
 	porcentaje_aumento_entidad: joi.string().required(),
 	total: joi.number().required(),
@@ -108,7 +95,19 @@ WHERE p.id = 1
 async function createPatrocinioPiloto(req, res) {
 	try {
 		const conexion = await connectDatabase();
+		const user_id = 11;
 
+		const [usuario] = await conexion.execute(
+			"SELECT * FROM usuario WHERE id = ?",
+			[user_id]
+		);
+		const user = usuario[0];
+
+		const userEmail = {
+			correo: user.correo, // Asegúrate de que 'user' está correctamente definido
+			nombre: user.nombre,
+			apellido: user.apellido,
+		};
 		for (const parte of req.body) {
 			const { error } = schemaPatrocinioInsert.validate(parte);
 			if (error) {
@@ -118,7 +117,6 @@ async function createPatrocinioPiloto(req, res) {
 				});
 			}
 			// const user_id = req.user.user_id;
-			const user_id = 17;
 
 			for (const partes_patrocinio of parte.partes_patrocinio) {
 				// console.log(partes_patrocinio);
@@ -181,7 +179,7 @@ WHERE p.id = ?
 					parte.id_patrocinador,
 					insertMongo.insertedId,
 					parte.id_entidad,
-					1,
+					parte.logo_id,
 					parte.total,
 				]
 			);
@@ -191,7 +189,9 @@ WHERE p.id = ?
 					message: "Error al insertar el patrocinio",
 				});
 			}
+			await sendEmail(userEmail, parte);
 		}
+
 		res.json({
 			success: true,
 			message: "Patrocinio insertado correctamente",

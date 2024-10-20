@@ -7,14 +7,17 @@ const {
 	getSignedImageUrl,
 	getSignedImagesUrls,
 	uploadFile,
+	getImageForuser,
 } = require("../controllers/S3");
 
 router.get("/", getSignedImageUrl);
 //localhost:3000/s3/?path=equipos/gx.png
 
-http: router.get("/folder", getSignedImagesUrls);
+router.get("/folder", getSignedImagesUrls);
 //localhost:3000/s3/folder?folderPath=equipos
 
 router.post("/upload/:id_area", upload.single("image"), uploadFile);
+
+router.get("/user/:id_image", getImageForuser);
 
 module.exports = router;
