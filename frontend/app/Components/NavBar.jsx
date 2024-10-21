@@ -78,8 +78,9 @@ function NavBar() {
 ]
 
   return (
+    <div className={'customPagePad'}>
    
-    <div className={`d-flex pt-2 pb-2 align-items-center container-fluid NavBar`}> 
+    <div className={`d-flex pt-2 mb-4 pb-2 align-items-center container-fluid NavBar`}> 
 
       <div className={`d-flex align-items-center col-3 justify-content-evenly`}>
 
@@ -144,6 +145,8 @@ function NavBar() {
 
         </aside>
       </div>
+
+    </div>
 
     </div>
 

@@ -20,6 +20,11 @@
   
 }
 
+.customPagePad
+{
+  height: 64px;
+}
+
 .NavBar{
     height: 64px;
     position: fixed;
