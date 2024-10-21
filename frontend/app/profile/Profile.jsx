@@ -115,10 +115,10 @@ function Profile() {
                             </div>
                             <div className="col-md-6">
                                 {preview && (
-                                <div>
-                                    <h3>Foto de Perfil:</h3>
-                                    <img src={preview} alt="Previsualización" width="200" />
-                                </div>
+                                    <div>
+                                        <h3>Foto de Perfil:</h3>
+                                        <img src={preview} alt="Previsualización" width="200" />
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -126,11 +126,11 @@ function Profile() {
                         <div className="row mt-3">
                             <div className="col-md-12">
                                 <button
-                                className="btn btn-primary d-flex align-items-center justify-content-center w-100 mt-4"
-                                style={{ height: "40px" }}
-                                onClick={goToHome}
+                                    className="btn btn-primary d-flex align-items-center justify-content-center w-100 mt-4"
+                                    style={{ height: "40px" }}
+                                    onClick={goToHome}
                                 >
-                                Volver
+                                    Volver
                                 </button>
                             </div>
                         </div>
