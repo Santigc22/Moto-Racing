@@ -53,6 +53,37 @@
   height: 0%;
   display: none;
 }
+
+.CustomInputGroup{
+  position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+}
+
+.customBirthInput{
+  width: 100%;
+    padding-right: 0px;
+}
+
+.customCalendarIcon{
+  position: absolute;
+  right: 0%;
+  height: 90%;
+  pointer-events: none;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  margin-top: 4px;
+  width: 5%;
+}
+
+.customIcon{
+  width: 15px;
+  font-size: small;
+}
 /*/////////////////////////////////////////////////*/
 
 @media (prefers-color-scheme: dark) {
