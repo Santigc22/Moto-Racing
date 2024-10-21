@@ -6,6 +6,7 @@ const {
 	getUsers,
 	setUsers,
 	verifyOTP,
+	getUserInformation,
 } = require("../controllers/usuarioController");
 
 const { cookieJwtAuthGeneral } = require("../security/AuthMiddleware");
@@ -18,5 +19,7 @@ router.post("/setUser", setUsers);
 
 // Ruta para verificar OTP
 router.post("/verifyOTP", verifyOTP);
+
+router.get("/info", getUserInformation)
 
 module.exports = router;

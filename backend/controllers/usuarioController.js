@@ -247,5 +247,49 @@ const verifyOTP = async (req, res) => {
 	}
 };
 
+const getUserInformation = async(req, res) => {
+	const bearer = req.headers.authorization
+
+	if (!bearer) {
+		const error = new Error('Unautorizado')
+		res.status(401).json({error: error.message})
+	}
+
+	const token = bearer.split(' ')[1]
+
+	try {
+		const decoded = jwt.verify(token, process.env.SECRET_TOKEN)
+		const id = decoded.user_id
+
+		conexion = await connectDatabase();
+
+		const [rows] = await conexion.execute(
+			"SELECT nombre, apellido, tipo_identificacion_id, identificacion, fecha_nacimiento, direccion, telefono FROM usuario WHERE id = ?",
+			[id]
+		);
+
+		if (rows.length === 0) {
+			return res.status(401).json({
+				success: false,
+				message: "Usuario no encontrado",
+			});
+		}
+
+		const user = rows[0];
+
+		res.status(200).json({
+			user_id: user.id,
+			user_name: user.nombre,
+			user_apellido: user.apellido,
+			user_identificcacion: user.identificacion,
+			user_fecha_nacimiento: user.fecha_nacimiento,
+			user_direccion: user.direccion,
+			user_telefono: user.telefono,
+		})
+	} catch(error) {
+		res.status(500).json({error: 'Invalid token'})
+	}
+}
+
 // Exportar el controlador
-module.exports = { getUsers, setUsers, verifyOTP };
+module.exports = { getUsers, setUsers, verifyOTP, getUserInformation };
