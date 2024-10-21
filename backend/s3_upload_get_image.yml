@@ -1,0 +1,125 @@
+openapi: 3.0.3
+info:
+  title: S3 File Management API
+  version: 1.0.0
+  description: API para manejar la subida y obtención de imágenes utilizando S3
+servers:
+  - url: https://moto-racing.onrender.com
+    description: API Base URL
+
+paths:
+  /s3/upload/{id_area}:
+    post:
+      summary: Subir archivo a S3
+      description: Sube un archivo a S3 y guarda la ruta en la base de datos.
+      tags:
+        - Upload
+      parameters:
+        - name: id_area
+          in: path
+          required: true
+          description: ID del área al que pertenece el archivo.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: El archivo de imagen a subir.
+      responses:
+        "200":
+          description: Archivo subido con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Archivo subido con éxito
+                  id_file_attachment:
+                    type: integer
+                    description: ID del archivo guardado en la base de datos.
+        "400":
+          description: Error en la solicitud
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Error: No se ha proporcionado un archivo."
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Error al subir el archivo."
+
+  /s3
+  /user/{id_image}:
+    get:
+      summary: Obtener la URL de una imagen
+      description: Genera una URL firmada para acceder a una imagen almacenada en S3.
+      tags:
+        - Images
+      parameters:
+        - name: id_image
+          in: path
+          required: true
+          description: ID de la imagen a obtener.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: URL de la imagen generada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    description: URL firmada de la imagen.
+                    example: "https://s3.motorracing01.amazonaws.com/example-image.jpg"
+        "400":
+          description: Error en la solicitud
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: No se ha proporcionado el ID de la imagen.
+        "404":
+          description: Imagen no encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: No se ha encontrado la imagen.
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Error al generar el enlace de la imagen."
