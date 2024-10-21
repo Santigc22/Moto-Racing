@@ -16,7 +16,7 @@ transport.verify().then(() => {
 });
 
 async function sendOtpEmail(user) {
-	console.log(user);
+	// console.log(user);
 	const { correo, nombre, apellido, otp } = user;
 
 	// Plantilla HTML para el correo OTP
@@ -45,5 +45,30 @@ async function sendOtpEmail(user) {
 		console.log("Error al enviar el correo:", error);
 	}
 }
+// Función para enviar el correo
+async function sendEmail(userEmail, patrocinio) {
+	// Plantilla de correo
+	const mailOptions = {
+		from: '"Moto-Racing" <moto.racing.ix@gmail.com>', // Correo del remitente
+		to: userEmail.correo, // Correo del destinatario
+		subject: "Detalles del Patrocinio",
+		html: `
+			<h2>Hola ${userEmail.nombre} ${userEmail.apellido},</h2>
+			<p>Gracias por tu patrocinio. Aquí tienes los detalles:</p>
+			<ul>
+				<li><strong>Subtotal del Patrocinio:</strong> $${patrocinio.subtotal}</li>
+				<li><strong>Total del Patrocinio (con aumento):</strong> $${patrocinio.total}</li>
+			</ul>
+			<p>Gracias por tu colaboración.</p>
+		`,
+	};
 
-module.exports = { sendOtpEmail };
+	// Enviar el correo
+	try {
+		await transport.sendMail(mailOptions);
+		console.log("Correo enviado exitosamente a " + userEmail.correo);
+	} catch (error) {
+		console.error("Error al enviar el correo:", error);
+	}
+}
+module.exports = { sendOtpEmail, sendEmail };
