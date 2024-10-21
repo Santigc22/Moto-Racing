@@ -13,7 +13,7 @@ async function connectDatabase() {
 			database: process.env.DB_NAME,
 		});
 
-		console.log("Conexión exitosa a MySQL");
+		// console.log("Conexión exitosa a MySQL");ss
 
 		// Devolver la conexión para que pueda ser utilizada
 		return conexion;
