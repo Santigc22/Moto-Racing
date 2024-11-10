@@ -11,6 +11,6 @@ const {
 competenciaRouter.get("/", getAllCompetecias);
 competenciaRouter.post("/", createCompetencia);
 competenciaRouter.patch("/:competencia_id",updateCompetencia);
-competenciaRouter.put("/:competencia_id",deleteCompetencia);
+competenciaRouter.delete("/:competencia_id",deleteCompetencia);
 
 module.exports = competenciaRouter;
