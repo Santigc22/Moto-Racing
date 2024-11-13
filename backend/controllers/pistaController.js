@@ -139,6 +139,8 @@ const setPista = async (req, res) => {
 			success: true,
 			message: "Pista creada exitosamente",
 		});
+		
+
 	} catch (error) {
 		console.error("Error al insertar el usuario:", error);
 		res.status(500).json({
