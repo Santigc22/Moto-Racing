@@ -168,7 +168,7 @@ const updateCarrera = async (req, res) => {
         }
 
         const conexion = await connectDatabase();
-        
+
         // Verificar si la carrera existe
         const [carrera] = await conexion.execute('SELECT * FROM carrera WHERE id = ?', [carrera_id]);
         if (carrera.length === 0) {
@@ -245,7 +245,7 @@ const deleteCarrera = async (req, res) => {
 
         // Verificar si la carrera existe
         const [carrera] = await conexion.execute(
-            'SELECT c.* FROM carrera c WHERE id = ?', 
+            'SELECT c.* FROM carrera c WHERE id = ?',
             [carrera_id]
         );
 
@@ -258,7 +258,7 @@ const deleteCarrera = async (req, res) => {
 
         // Cambiar el estado a 0 (deshabilitar)
         await conexion.execute(
-            'UPDATE carrera SET status = 0 WHERE id = ?', 
+            'UPDATE carrera SET status = 0 WHERE id = ?',
             [carrera_id]
         );
 
@@ -267,7 +267,7 @@ const deleteCarrera = async (req, res) => {
             message: "carrera eliminada satisfactoriamente.",
             id: carrera_id
         });
-        
+
     } catch (error) {
         console.error(error);
         res.status(409).json({
@@ -280,6 +280,88 @@ const deleteCarrera = async (req, res) => {
     }
 };
 
+const traerCorredores = async (req, res) => {
+    try {
+        //traer corredores
+        const { carrera_id } = req.params;
+        const conexion = await connectDatabase();
+
+        const query = `SELECT 
+p.id,
+u.nombre,
+u.apellido
+FROM participantes p
+JOIN usuario u ON u.id = p.piloto_id
+WHERE p.carrera_id = ?`
+
+        const [result] = await conexion.execute(query, [carrera_id])
+
+        if (result) {
+            res.status(200).json({
+                Carrera: result,
+            });
+        } else {
+            res.status(400).json({
+                message: "Error en la consulta",
+                error: error.message
+            })
+        }
+        await conexion.end();
+
+    } catch (error) {
+        console.error(error);
+        res.status(409).json({
+            success: false,
+            message: "Error al incribir en la carrera",
+            error: error.message
+        });
+    }
+}
+
+const inscribirCorredor = async (req, res) => {
+    const { carrera_id } = req.params;
+    let conexion;
+    try {
+        //validar el numero de participantes
+        conexion = await connectDatabase();
+        const [participantes] = await conexion.execute(
+            'SELECT c.max_competidores FROM carrera c WHERE c.id = ?', [carrera_id]
+        )
+        if(participantes.length == 0){
+            return res.status(404).json({
+                success: false,
+                message: "La carrera no existe."
+            });
+        }
+        res.status(200).json({
+            message: "El cupo es:",participantes
+        });
+        //validar el cupo disponible
+        //verificar si ya no esta inscrito
+        //inscribir
+    } catch (error) {
+        console.error(error);
+        res.status(409).json({
+            success: false,
+            message: "Error al incribir en la carrera",
+            error: error.message
+        });
+    }
+}
+
+const quitarCorredor = async (req, res) => {
+    try {
+        //quitar
+    } catch (error) {
+        console.error(error);
+        res.status(409).json({
+            success: false,
+            message: "Error al incribir en la carrera",
+            error: error.message
+        });
+    }
+}
+
 
 
 module.exports = {
@@ -287,5 +369,8 @@ module.exports = {
     getOneCarrera,
     createCarrera,
     updateCarrera,
-    deleteCarrera
+    deleteCarrera,
+    inscribirCorredor,
+    quitarCorredor,
+    traerCorredores
 };
