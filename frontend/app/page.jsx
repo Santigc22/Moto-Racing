@@ -3,15 +3,36 @@ import styles from "./page.module.css";
 import { useState } from "react";
 import VideoBackground from "./Components/VideoBackground";
 import { useRouter } from "next/navigation";
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 
 
 export default function Home() {
+
+  const [showPass, setShowPass] = useState("password");
+
+  const [showPassIcon, setShowPassIcon] = useState("bi bi-eye");
 
   const router = useRouter();
 
   const [username, setUsername] = useState("");
 
   const [Password, setPassword] = useState("");
+
+  const [AuthCode, setAuthCode] = useState("");
+
+  ///
+
+  const [showModal, setShowModal] = useState(false);
+
+  const toggleModal = () => {
+    
+    setShowModal(!showModal);
+
+    
+
+  }
+  /////
 
   const UsernameHandler = (e) =>
   {
@@ -23,6 +44,13 @@ export default function Home() {
     setPassword(e);
   }
 
+
+  const showPassHandler = (e) =>
+  {
+    e.preventDefault();
+    setShowPass(showPass=="password" ? "text" : "password" );
+    setShowPassIcon(showPassIcon == "bi bi-eye" ? "bi bi-eye-slash": "bi bi-eye")
+  }
    const SubmitHandler = async (e) =>
    {
     
@@ -43,7 +71,8 @@ export default function Home() {
          });
 
          if (response.ok) {
-          router.push("/dashboard");
+          toggleModal()
+          // router.push("/dashboard");
         } else {
           alert("Algo ha salido mal");
         }
@@ -56,12 +85,73 @@ export default function Home() {
     
   }
 
+  const validateOtp = async () =>
+  {
+    try {
+
+      const response = await fetch('https://moto-racing.onrender.com/usuarios/verifyOTP', 
+        {
+          method: 'POST',
+          body: JSON.stringify(
+            {
+              correo: username, 
+              otp: AuthCode
+            }),
+            headers: {
+              'content-type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+          router.push("/dashboard");
+       } else {
+         alert("Algo ha salido mal");
+       }
+
+        console.log(response.json);
+     
+    } catch (error) {
+      console.log(error);
+    }
+   
+  }
+
   return (
 
    
 
     <div className="d-flex flex-column align-items-center vh-100 justify-content-center">
        
+       <div>
+         {/* Modal */}
+      {showModal && (
+        <div className="modal show d-block" tabIndex="-1" role="dialog">
+          <div className="modal-dialog" role="document">
+            <div className={`modal-content ${styles.customModalContent}`}>
+              <div className="modal-header justify-content-between">
+                <h5 className="modal-title">Autenticación 2FA</h5>
+                <button type="button" className="close" onClick={toggleModal}>
+                  <span>&times;</span>
+                </button>
+              </div>
+              <div className={`modal-body ${styles.customModalBody}`}>
+                <p>Hemos enviado un código a tu correo. Por favor digita el código</p>
+                <input onChange={(e) => setAuthCode(e.target.value)} type="number" className={`${styles.customModalInput}`}></input>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={validateOtp}>
+                  Iniciar sesión
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Backdrop para el modal */}
+      {showModal && <div className="modal-backdrop fade show" onClick={toggleModal}></div>}
+    
+       </div>
 
        <VideoBackground/>
       <main className={styles.main}>
@@ -85,8 +175,15 @@ export default function Home() {
 
           <div>
             <label htmlFor="password" className="form-label text-uppercase text-white">Contraseña</label>
-            <input onChange={(e)=>{PasswordHandler(e.target.value)}} id="password" required className={`mt-1 form-control rounded border border-gray-200 text-black shadow-sm ${styles.customInput}`} 
-            type="password" name="password"></input>
+            <div className="d-flex">
+            <input placeholder={"Contraseña"} onChange={(e)=>{PasswordHandler(e.target.value)}} id="password" required className={`form-control rounded border border-gray-200 mx-1 text-black shadow-sm ${styles.customInput}`} 
+            type={`${showPass}`} name="password"></input>
+
+            <button type="button" onClick={showPassHandler}  className={`btn text-uppercase text-white btn-white border border-gray-200 d-flex align-items-center justify-content-center w-30 ${styles.customHoverEffect}`} style={{height: "38px"}}>
+            <i className={`${showPassIcon}`}></i>
+            </button>
+
+            </div>
           </div>
 
           <br></br>
@@ -95,11 +192,17 @@ export default function Home() {
             Iniciar sesión
           </button>
 
-          <a>Registrate</a>
+          <a href="./registro">
+            ¿No tienes cuenta?
+          </a>
 
           
         </div>
       </form>
+
+      {/* Modal */}
+     
+
 
       
      

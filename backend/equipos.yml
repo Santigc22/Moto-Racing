@@ -1,0 +1,218 @@
+openapi: 3.0.0
+info:
+  title: API de Equipos de Carreras
+  description: API para gestionar equipos de carreras, incluyendo obtención, creación, actualización y eliminación de equipos.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api
+    description: Servidor local
+
+paths:
+  /equipos:
+    get:
+      summary: Obtener todos los equipos
+      description: Obtiene una lista paginada de equipos. Permite filtrar por nombre de equipo o representante.
+      parameters:
+        - in: query
+          name: teamName
+          schema:
+            type: string
+          description: Nombre del equipo a filtrar
+        - in: query
+          name: teamOwner
+          schema:
+            type: string
+          description: Nombre del representante del equipo a filtrar
+        - in: query
+          name: resultsPerPage
+          schema:
+            type: integer
+          description: Número de resultados por página
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Número de página a consultar
+      responses:
+        '200':
+          description: Lista de equipos obtenida correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  equipos:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        nombre:
+                          type: string
+                          example: "Equipo de Carreras 1"
+                        representante_nombre:
+                          type: string
+                          example: "Juan Pérez"
+                        logo_path:
+                          type: string
+                          example: "/logos/logo1.png"
+                        extra_por_patrocinio:
+                          type: integer
+                          example: 500
+                  totalResults:
+                    type: integer
+                    example: 100
+                  totalPages:
+                    type: integer
+                    example: 10
+                  currentPage:
+                    type: integer
+                    example: 1
+                  resultsPerPage:
+                    type: integer
+                    example: 10
+        '400':
+          description: Error en la solicitud
+        '500':
+          description: Error en el servidor
+
+    post:
+      summary: Crear un nuevo equipo
+      description: Crea un nuevo equipo, verificando que el representante y el logo existan y que no haya duplicados en el nombre.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: "Nuevo Equipo"
+                representante_id:
+                  type: integer
+                  example: 1
+                logo_id:
+                  type: integer
+                  example: 1
+                extra:
+                  type: integer
+                  example: 1000
+      responses:
+        '201':
+          description: Equipo creado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  equipo_id:
+                    type: integer
+                    example: 1
+        '400':
+          description: Error en los datos proporcionados o nombre de equipo ya existente
+        '500':
+          description: Error en el servidor
+
+  /equipos/{equipo_id}:
+    get:
+      summary: Obtener un equipo por ID
+      description: Obtiene el detalle de un equipo específico mediante su ID.
+      parameters:
+        - in: path
+          name: equipo_id
+          required: true
+          schema:
+            type: integer
+          description: ID del equipo
+      responses:
+        '200':
+          description: Detalle del equipo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  equipo:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      nombre:
+                        type: string
+                        example: "Equipo de Carreras 1"
+                      representante_nombre:
+                        type: string
+                        example: "Juan Pérez"
+                      logo_path:
+                        type: string
+                        example: "/logos/logo1.png"
+                      extra_por_patrocinio:
+                        type: integer
+                        example: 500
+        '404':
+          description: Equipo no encontrado
+        '500':
+          description: Error en el servidor
+
+    patch:
+      summary: Actualizar un equipo
+      description: Actualiza uno o más campos de un equipo específico. Solo los campos enviados en el cuerpo serán actualizados.
+      parameters:
+        - in: path
+          name: equipo_id
+          required: true
+          schema:
+            type: integer
+          description: ID del equipo a actualizar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: "Nuevo Nombre del Equipo"
+                representante_id:
+                  type: integer
+                  example: 2
+                logo_id:
+                  type: integer
+                  example: 1
+                extra:
+                  type: integer
+                  example: 1000
+      responses:
+        '200':
+          description: Equipo actualizado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  equipo_id:
+                    type: integer
+                    example: 1
+        '400':
+          description: Datos inválidos o nombre de equipo ya existente
+        '404':
+          description: Equipo no encontrado
+        '500':
+          description: Error en el servidor
