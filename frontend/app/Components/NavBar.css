@@ -1,53 +1,53 @@
-.menu-btn{
+.menu-btn {
 
-    border: none;
-    background-color: transparent;
-    color: white;
-    width: 24px;
-    height: 24px;
-    min-height: 24px;
-    min-height: 24px;
+  border: none;
+  background-color: transparent;
+  color: white;
+  width: 24px;
+  height: 24px;
+  min-height: 24px;
+  min-height: 24px;
 
-    
+
 }
 
-.menu-btn :hover
-{
+.menu-btn :hover {
   box-shadow: 0px 0px 2px 2px rgb(255, 3, 3);
-  border-radius:30px;
+  border-radius: 30px;
   width: 1.5rem;
   height: 1.5rem;
-  
+
 }
 
-.customPagePad
-{
+.customPagePad {
   height: 64px;
 }
 
-.NavBar{
-    height: 64px;
-    position: fixed;
-    top: 0;
-    backdrop-filter: blur(10px); /* Desenfoque */
-    background-color: rgba(0, 0, 0, 0.8); /* Fondo semi-transparente */
-    z-index: 1000; /* Asegura que la barra esté por encima de otros elementos */
+.NavBar {
+  height: 64px;
+  position: fixed;
+  top: 0;
+  backdrop-filter: blur(10px);
+  /* Desenfoque */
+  background-color: rgba(0, 0, 0, 0.8);
+  /* Fondo semi-transparente */
+  z-index: 1000;
+  /* Asegura que la barra esté por encima de otros elementos */
 }
 
-.EndSession-btn{
+.EndSession-btn {
 
-    border: none;
-    background-color: transparent;
-    color: white;
-    width: auto;
-    height: auto;
-    min-height: 24px;
-    min-height: 24px;
+  border: none;
+  background-color: transparent;
+  color: white;
+  width: auto;
+  height: auto;
+  min-height: 24px;
+  min-height: 24px;
 
 }
 
-.sidebar
-{
+.sidebar {
   width: 17rem;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.801);
@@ -55,32 +55,31 @@
   transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.sidebar__top{
-width: max-content;
-display: flex;
-align-items: center;
-gap: 1rem;
-padding-bottom: 1rem;
-margin-bottom: 1rem;
-border-bottom: 1px solid #e5e7eb;
+.sidebar__top {
+  width: max-content;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.sidebar__logo
-{
+.sidebar__logo {
   width: 3.4rem;
   height: 3.5rem;
   object-fit: cover;
   border-radius: 1rem;
 }
-.sidebar__list
-{
+
+.sidebar__list {
   list-style: none;
   padding-left: 0px;
   overflow: overlay;
   max-height: 82vh;
 }
-.sidebar__link
-{
+
+.sidebar__link {
   display: inline-block;
   font-size: 1rem;
   text-decoration: none;
@@ -93,56 +92,54 @@ border-bottom: 1px solid #e5e7eb;
 
 }
 
-.sidebar__link:hover{
+.sidebar__link:hover {
   background-color: red;
-  color:white
-
+  color: white
 }
 
-.sidebar__icon
-{
+.sidebar__icon {
   margin: 10px;
   font-size: 1.2rem;
   display: inline-block;
 }
 
-.sidebar__name
-{
+.sidebar__name {
   margin-left: 0.5rem;
 }
-.sidebar_logo_name{
+
+.sidebar_logo_name {
   font-size: 1.2rem;
   font-weight: 600;
 }
 
-.layoutBase
-{
+.layoutBase {
   display: flex;
   gap: 2rem;
   box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.473);
 }
-.sidebar__wrapper
-{
+
+.sidebar__wrapper {
   position: absolute;
-    left: 0%;
-    top: 100%;
-  
-}
-[data-collapse="true"]
-{
-  width: 0%;
-    position: relative;
-    left: -34px;
+  left: 0%;
+  top: 100%;
 
 }
-[data-collapse="true"] .sidebar__name
-{
+
+[data-collapse="true"] {
+  width: 0%;
+  position: relative;
+  left: -34px;
+
+}
+
+[data-collapse="true"] .sidebar__name {
   display: none;
 }
-.sidebar__item{
+
+.sidebar__item {
   transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-[data-collapse="true"] .sidebar__item
-{
+
+[data-collapse="true"] .sidebar__item {
   display: none;
 }
