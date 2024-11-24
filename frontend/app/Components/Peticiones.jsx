@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 const datapostputdelget = async (url, data, method) => {
 	let result = "";
 	if (method === "GET") {
-		result = await fetch(`http://localhost:3001${url}`, {
+		result = await fetch(`https://moto-racing.onrender.com${url}`, {
 			method: method,
 			headers: {
 				"access-control-allow-origin": "*",
@@ -13,7 +13,7 @@ const datapostputdelget = async (url, data, method) => {
 			},
 		});
 	} else {
-		result = await fetch(`http://localhost:3001${url}`, {
+		result = await fetch(`https://moto-racing.onrender.com${url}`, {
 			method: method,
 			headers: {
 				"access-control-allow-origin": "*",
@@ -40,14 +40,14 @@ const datapostputdelget = async (url, data, method) => {
 const datapostputdelgetNOJSON = async (url, data, method) => {
 	let result = "";
 	if (method === "GET") {
-		result = await fetch(`http://localhost:3001${url}`, {
+		result = await fetch(`https://moto-racing.onrender.com${url}`, {
 			method: method,
 			headers: {
 				"access-control-allow-origin": "*",
 			},
 		});
 	} else {
-		result = await fetch(`http://localhost:3001${url}`, {
+		result = await fetch(`https://moto-racing.onrender.com${url}`, {
 			method: method,
 			headers: {
 				"access-control-allow-origin": "*",
