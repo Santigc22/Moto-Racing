@@ -5,9 +5,13 @@ require("dotenv").config();
 const app = express();
 const multer = require("multer");
 const usuarioRoutes = require("./routes/usuario_routes");
+const pistaRoutes = require("./routes/pista_routes");
 const s3 = require("./routes/S3");
 const tiposRouter = require("./routes/tipos_routes");
 const patrociniosRouter = require("./routes/patrocinios_routes");
+const motosRoutes = require("./routes/motos_routes");
+const competenciaRouter = require('./routes/competencia_routes')
+const carrerasRouter = require('./routes/carreras_routes')
 // Configurar el almacenamiento de Multer
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
@@ -47,8 +51,13 @@ app.get("/", async (req, res) => {
 app.use("/tipos", tiposRouter);
 app.use("/patrocinios", patrociniosRouter);
 app.use("/usuarios", usuarioRoutes);
+app.use("/pista",pistaRoutes);
+
 app.use("/s3", s3);
 app.use("/equipos", equiposRouter);
+app.use("/motos", motosRoutes);
+app.use("/competencia", competenciaRouter);
+app.use('/carreras', carrerasRouter)
 
 const PORT = process.env.PORT;
 
