@@ -69,7 +69,7 @@ function NavBar() {
       name:"Patrocinadores 4NF",
       href:"/legalizaciones",
       icon:<i className="bi bi-pencil"></i>
-  },
+    },
     {
         name: "Cerrar sesión",
         href:"/",

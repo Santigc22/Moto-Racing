@@ -1,12 +1,47 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import NavBar from '../Components/NavBar'
 import { AcmeLogo } from '../Components/AcmeLogo'
 import { useEffect } from 'react';
 import styles from './page.module.css'
+import DashboardCards from '../Components/DashboardCards';
 
 function Dashboard() {
+
+  const [Competencias, setCompetencias] = useState("");
+
+  const GetCompetencies = async () =>
+    {
+
+      try {
+ 
+        const response = await fetch('https://moto-racing.onrender.com/competencia', 
+          {
+            method: 'GET',
+            
+          });
+ 
+          if (response.ok) {
+            const data = await response.json();
+            setCompetencias(data);
+           // router.push("/dashboard");
+         } else {
+           alert("Algo ha salido mal");
+         }
+ 
+          console.log(response.json);
+       
+      } catch (error) {
+        console.log(error);
+      }
+     
+   }
+
+  useEffect(()=>
+  {
+    GetCompetencies();
+  },[])
 
   useEffect(() => {
     // Asegúrate de que el JS de Bootstrap se cargue en el lado del cliente
@@ -16,7 +51,7 @@ function Dashboard() {
   }, []);
 
   return (
-    <div>
+    <div style={{height:'100vh'}}>
 
     <NavBar />
 
@@ -75,6 +110,20 @@ function Dashboard() {
         </button>
       </div>
     </div>
+
+      <div className='d-flex'>
+        <h2>Competencias</h2>
+
+        <div>
+         {Array.isArray(Competencias) && Competencias.map((Compe, index) => (
+
+          <DashboardCards competenceTitle={Compe.nombre} competenceDescription={Compe.descripcion}/>
+
+          ))}
+        </div>
+      </div>
+      
+   
 
     
 
