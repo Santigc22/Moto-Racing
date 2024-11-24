@@ -36,7 +36,7 @@ const equiposRouter = require("./routes/equipo_routes");
 app.use(express.json());
 
 const corsOptions = {
-	origin: ["http://localhost:3000", "https://miapp.com"], // Orígenes permitidos
+	origin: ["http://localhost:3000", "https://moto-racing-ui.onrender.com"], // Orígenes permitidos
 };
 app.use(cors(corsOptions));
 app.get("/", async (req, res) => {
