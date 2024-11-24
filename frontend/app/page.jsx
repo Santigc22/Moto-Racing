@@ -89,7 +89,10 @@ export default function Home() {
 				}
 			);
 
+      const token = await response.json()
+
 			if (response.ok) {
+        sessionStorage.setItem('authToken',token.authorization);
 				router.push("/dashboard");
 			} else {
 				alert("Algo ha salido mal");
