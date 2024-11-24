@@ -237,7 +237,7 @@ const updateCarrera = async (req, res) => {
 };
 
 const deleteCarrera = async (req, res) => {
-    const { carrera_id } = req.params;
+    const { carrera_id } = req.body;
     let conexion;
 
     try {
@@ -319,48 +319,141 @@ WHERE p.carrera_id = ?`
 }
 
 const inscribirCorredor = async (req, res) => {
-    const { carrera_id } = req.params;
+    const { carrera_id, piloto_id, moto_id } = req.body;
     let conexion;
+
     try {
-        //validar el numero de participantes
+        if (!carrera_id || !piloto_id || !moto_id) {
+            return res.status(400).json({
+                success: false,
+                message: "Todos los campos son obligatorios."
+            });
+        }
+        // Conectar a la base de datos
         conexion = await connectDatabase();
-        const [participantes] = await conexion.execute(
-            'SELECT c.max_competidores FROM carrera c WHERE c.id = ?', [carrera_id]
-        )
-        if(participantes.length == 0){
+
+        // Validar el número máximo de competidores
+        const [carreras] = await conexion.execute(
+            'SELECT c.max_competidores FROM carrera c WHERE c.id = ?', 
+            [carrera_id]
+        );
+
+        if (carreras.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: "La carrera no existe."
             });
         }
+
+        const max_competidores = carreras[0].max_competidores;
+
+        // Obtener el número de inscriptos actuales
+        const [inscriptos] = await conexion.execute(
+            'SELECT COUNT(p.piloto_id) AS n_participantes FROM participantes p WHERE p.carrera_id = ?', 
+            [carrera_id]
+        );
+
+        const n_participantes = inscriptos[0].n_participantes;
+
+        // Validar si hay cupo disponible
+        if (n_participantes >= max_competidores) {
+            return res.status(400).json({
+                success: false,
+                message: "No hay cupos disponibles para esta carrera."
+            });
+        }
+
+        // Verificar si el piloto ya está inscrito en la carrera
+        const [registroExistente] = await conexion.execute(
+            'SELECT * FROM participantes WHERE carrera_id = ? AND piloto_id = ?', 
+            [carrera_id, piloto_id]
+        );
+
+        if (registroExistente.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: "El piloto ya está inscrito en esta carrera."
+            });
+        }
+
+        // Inscribir al piloto
+        await conexion.execute(
+            'INSERT INTO participantes (carrera_id, piloto_id, moto_id) VALUES (?, ?, ?)', 
+            [carrera_id, piloto_id, moto_id]
+        );
+
         res.status(200).json({
-            message: "El cupo es:",participantes
+            success: true,
+            message: "El piloto ha sido inscrito con éxito.",
         });
-        //validar el cupo disponible
-        //verificar si ya no esta inscrito
-        //inscribir
     } catch (error) {
         console.error(error);
-        res.status(409).json({
+        res.status(500).json({
             success: false,
-            message: "Error al incribir en la carrera",
+            message: "Error al inscribir en la carrera",
             error: error.message
         });
+    } finally {
+        if (conexion) {
+            conexion.end();
+        }
     }
-}
+};
+
 
 const quitarCorredor = async (req, res) => {
-    try {
-        //quitar
-    } catch (error) {
-        console.error(error);
-        res.status(409).json({
+    const { carrera_id, piloto_id } = req.body;
+
+    if (!carrera_id || !piloto_id) {
+        return res.status(400).json({
             success: false,
-            message: "Error al incribir en la carrera",
-            error: error.message
+            message: "Los campos 'carrera_id' y 'piloto_id' son obligatorios."
         });
     }
-}
+
+    let conexion;
+    console.log(carrera_id)
+    try {
+        // Conectar a la base de datos
+        conexion = await connectDatabase();
+
+        // Verificar si el piloto está inscrito en la carrera
+        const [registroExistente] = await conexion.execute(
+            'SELECT * FROM participantes WHERE carrera_id = ? AND piloto_id = ?',
+            [carrera_id, piloto_id]
+        );
+
+        if (registroExistente.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "El piloto no está inscrito en esta carrera."
+            });
+        }
+
+        // Quitar al piloto de la carrera
+        await conexion.execute(
+            'DELETE FROM participantes WHERE carrera_id = ? AND piloto_id = ?',
+            [carrera_id, piloto_id]
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "El piloto ha sido eliminado de la carrera con éxito."
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Error al quitar al piloto de la carrera.",
+            error: error.message
+        });
+    } finally {
+        if (conexion) {
+            conexion.end();
+        }
+    }
+};
+
 
 
 
@@ -372,5 +465,6 @@ module.exports = {
     deleteCarrera,
     inscribirCorredor,
     quitarCorredor,
-    traerCorredores
+    traerCorredores,
+    quitarCorredor
 };
