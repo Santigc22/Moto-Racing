@@ -138,3 +138,5 @@ const estadoPiloto = async (req, res) => {
 
 // Exportar el controlador de pilotos
 module.exports = { setPiloto, getPilotos, getPilotoById, updatePiloto, estadoPiloto };
+
+//test
