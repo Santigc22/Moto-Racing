@@ -5,6 +5,7 @@ require("dotenv").config();
 const app = express();
 const multer = require("multer");
 const usuarioRoutes = require("./routes/usuario_routes");
+const pistaRoutes = require("./routes/pista_routes");
 const s3 = require("./routes/S3");
 const tiposRouter = require("./routes/tipos_routes");
 const patrociniosRouter = require("./routes/patrocinios_routes");
@@ -47,6 +48,8 @@ app.get("/", async (req, res) => {
 app.use("/tipos", tiposRouter);
 app.use("/patrocinios", patrociniosRouter);
 app.use("/usuarios", usuarioRoutes);
+app.use("/pista",pistaRoutes);
+
 app.use("/s3", s3);
 app.use("/equipos", equiposRouter);
 app.use("/competencia", competenciaRouter);
