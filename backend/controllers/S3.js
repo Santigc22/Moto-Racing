@@ -129,13 +129,13 @@ const uploadFile = async (req, res) => {
 		const data = await s3.upload(params).promise();
 		//cargar ruta a la base de datos tabla atachemn
 
-		console.log(data);
+		// console.log(data);
 
 		const query_insert_attachmen = `INSERT INTO attachment (path, nombre) VALUES ('${data.key}', '${image.originalname}_${fecha}')`;
 		// console.log(query_insert_attachmen);
 
 		const insertId = await conexion.query(query_insert_attachmen);
-		console.log(insertId);
+		// console.log(insertId);
 
 		return res.status(200).json({
 			message: "Archivo subido con éxito",
