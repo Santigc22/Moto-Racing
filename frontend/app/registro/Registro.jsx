@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import styles from "./page.module.css";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import ImageBG from '../Components/ImageBG';
 
 function Registro() {
@@ -20,6 +21,46 @@ function Registro() {
   const [showPilotForm, setShowPilotForm] = useState();
 
   const [correo, setCorreo] = useState("");
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [preview, setPreview] = useState(null); // Para previsualizar la imagen
+
+
+  const validarEdad = (fecha) => {
+    const today = new Date();
+    const birthDate = new Date(fecha);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+  
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+  
+    return age >= 18; // Retorna true si es mayor o igual a 18
+  };
+
+  const handleFechaNaciChange = (e) => {
+    const fecha = e.target.value;
+    setFechaNaci(fecha);
+  
+    // Verificar si el tipo de identificación es "Cédula de ciudadanía"
+    if (tipoIden === "1") { // Ajusta el valor "1" según el ID de Cédula de ciudadanía
+      if (!validarEdad(fecha)) {
+        alert("Debe ser mayor de 18 años para seleccionar Cédula de ciudadanía.");
+        setFechaNaci(''); // Limpiar la fecha si no cumple con la validación
+      }
+    }
+  };
+
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]; // Obtener el primer archivo seleccionado
+    setSelectedFile(file);
+
+    // Opcional: Crear una vista previa de la imagen seleccionada
+    const filePreview = URL.createObjectURL(file);
+    setPreview(filePreview);
+  };
 
   const showForm = () =>
   {
@@ -143,6 +184,8 @@ function Registro() {
     return true;
   };
 
+  const formData = new FormData();
+		formData.append("image", selectedFile);
 
   const registrar = async () => {
 
@@ -166,7 +209,6 @@ function Registro() {
           password,
           tipoUser,
           correo
-
         }),
       })
 
@@ -182,20 +224,43 @@ function Registro() {
         setPassword("");
         setTypeUserSelected("");
         setCorreo("");
-  
-        // Redirigir al login
-        goToLogin();
+        
+        try {
+          const responseImage = await fetch('https://moto-racing.onrender.com/s3/upload/usuarios', {
+            method: 'POST',
+            body:formData
+    
+    
+          })
+    
+          if (responseImage.ok) {
+    
+            // Redirigir al login
+            goToLogin();
+    
+          } else {
+            // Manejo de errores si la respuesta no es exitosa
+            console.log("Error al enviar los datos");
+          }
+        }
+       catch (err) {
+        console.error("Error al hacer la solicitud:", err);
+      }
+
+        
+        
       } else {
         // Manejo de errores si la respuesta no es exitosa
         console.log("Error al enviar los datos");
       }
-        
-       
-       
-        
+  
     } catch (err) {
       console.error("Error al hacer la solicitud:", err);
     }
+
+   
+
+
   };
 
 
@@ -297,7 +362,9 @@ function Registro() {
                 />
               </div>
               <div className="col-md-6">
-                <label htmlFor="birth_date" className="form-label text-uppercase small text-white">Fecha de Nacimiento (*)</label>
+              <label htmlFor="birth_date" className="form-label text-uppercase small text-white">Fecha de Nacimiento (*)</label>
+                
+                <div className={`input-group ${styles.CustomInputGroup}`}>
                 <input
                   id="birth_date"
                   type="date"
@@ -305,10 +372,19 @@ function Registro() {
                     title="El formato de la fecha debe ser YYYY-MM-DD"
                   required
                   placeholder="YYYY-MM-DD" 
-                  className="mt-1 form-control bg-white rounded border border-gray-200 shadow-sm"
-                  onChange={(e) => setFechaNaci(e.target.value)}
+                  className={`mt-1 form-control bg-white rounded border border-gray-200 shadow-sm ${styles.customBirthInput}`}
+                  onChange={handleFechaNaciChange}
+                  value={fechaNaci} // Asignar el valor actual del estado
                 />
+                 <span class={`input-group-text ${styles.customCalendarIcon}`} id="basic-addon2">
+                 <i class="bi bi-calendar3" className={`${styles.customIcon}`}></i>
+                </span>
+                </div>
+                
               </div>
+
+             
+ 
             </div>
 
             <div className="row mt-3">
@@ -401,6 +477,27 @@ function Registro() {
                   placeholder ="Contraseña"
                 />
               </div>
+
+              
+            </div>
+
+            <div className="row mt-3">
+            
+              <div className="col-md-6">
+                <label htmlFor="profilePicture" className="form-label text-uppercase small text-white">Foto de perfil (*)</label>
+                <input type="file" id="imageUpload" name="image" accept="image/*" onChange={handleFileChange}></input>
+                <label>Solo se aceptan archivos tipo imagen (jpg, png)</label>
+              </div>
+
+              
+            <div className="col-md-6">
+              {preview && (
+              <div>
+                <h3>Vista previa:</h3>
+                <img src={preview} alt="Previsualización" width="200" />
+              </div>
+              )}
+            </div>
 
               
             </div>

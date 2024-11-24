@@ -1,10 +1,9 @@
-'use client'
-import 'bootstrap-icons/font/bootstrap-icons.css';
+"use client";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import { useState } from "react";
-import Link from 'next/link';
-import  './NavBar.css'
-import { useRouter } from 'next/navigation';
-
+import Link from "next/link";
+import "./NavBar.css";
+import { useRouter } from "next/navigation";
 
 function NavBar() {
 
@@ -51,6 +50,11 @@ function NavBar() {
         icon: <i className="bi bi-people-fill"></i>
     },
     {
+      name:"Motos NF",
+      href:"/moto",
+      icon: <i className="bi bi-clipboard2-check-fill"></i>
+    },
+    {
         name:"Equipos NF",
         href:"/practicas",
         icon: <i className="bi bi-clipboard-check"></i>
@@ -78,8 +82,9 @@ function NavBar() {
 ]
 
   return (
+    <div className={'customPagePad'}>
    
-    <div className={`d-flex pt-2 pb-2 align-items-center container-fluid NavBar`}> 
+    <div className={`d-flex pt-2 mb-4 pb-2 align-items-center container-fluid NavBar`}> 
 
       <div className={`d-flex align-items-center col-3 justify-content-evenly`}>
 
@@ -147,7 +152,9 @@ function NavBar() {
 
     </div>
 
+    </div>
+
   )
 }
 
-export default NavBar
+export default NavBar;
