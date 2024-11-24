@@ -51,6 +51,11 @@ function NavBar() {
         icon: <i className="bi bi-people-fill"></i>
     },
     {
+      name:"Motos NF",
+      href:"/moto",
+      icon: <i className="bi bi-clipboard2-check-fill"></i>
+    },
+    {
         name:"Equipos NF",
         href:"/practicas",
         icon: <i className="bi bi-clipboard-check"></i>
