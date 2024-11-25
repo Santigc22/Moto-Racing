@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import {
 	datapostputdelget,
 	datapostputdelgetNOJSON,
@@ -7,11 +7,13 @@ import {
 import { useRouter } from "next/navigation";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-function Pilotos({ setCurrentView }) {
-	const [listaPilotos, setListaPilotos] = useState([]);
-	const [partsPilotoPatrocinio, setPartesPilotoPatrocinio] = useState([]);
+function Competencias() {
+	const [listaCompetencias, setListaCompetencias] = useState([]);
+	const [partsCompetenciaPatrocinio, setPartsCompetenciaPatrocinio] = useState(
+		[]
+	);
 	const [partesSeleccionadas, setPartesSeleccionadas] = useState([]);
-	const [piloto_id, setPiloto_id] = useState("");
+	const [competencia_id, setCompetencia_id] = useState("");
 	const [logo_id, setLogo_id] = useState(null);
 	const [porcentaje_aumento_entidad, setPorcentaje_aumento_entidad] =
 		useState(0);
@@ -22,27 +24,27 @@ function Pilotos({ setCurrentView }) {
 	const [datosFinales, setDatosFinales] = useState(null); // Cambiado a null inicialmente
 	const router = useRouter(); // Obtener el router
 	// Obtener lista de equipos
-	const getPilotos = async () => {
+	const getCompetencias = async () => {
 		try {
-			const result = await datapostputdelget("/pilotos/getPilotos", "", "GET");
+			const result = await datapostputdelget("/competencia", "", "GET");
 			if (result) {
-				setListaPilotos(result.response);
+				setListaCompetencias(result.competencias);
 			}
 		} catch (error) {
 			console.error("Error en la solicitud:", error);
 		}
 	};
 
-	// Obtener partes del piloto seleccionado
-	const getPartesPilotoPatrocinio = async () => {
+	// Obtener partes del equipo seleccionado
+	const getPartesPtrocinioCompetencia = async () => {
 		try {
 			const result = await datapostputdelget(
-				`/patrocinios/partes_piloto/${piloto_id}`,
+				`/patrocinios/partes_compentecia/${competencia_id}`,
 				"",
 				"GET"
 			);
 			if (result && result.data && result.data.partes) {
-				setPartesPilotoPatrocinio(result.data.partes);
+				setPartsCompetenciaPatrocinio(result.data.partes);
 			}
 		} catch (error) {
 			console.error("Error en la solicitud:", error);
@@ -95,11 +97,11 @@ function Pilotos({ setCurrentView }) {
 	};
 
 	// Manejar la selección de equipo
-	const handlePilotoChange = (e) => {
-		const selectedEquipoId = e.target.value;
-		setPiloto_id(selectedEquipoId);
-		const equipoSeleccionado = listaPilotos.find(
-			(equipo) => equipo.id === parseInt(selectedEquipoId)
+	const handleEquipoChange = (e) => {
+		const selectCompetencia = e.target.value;
+		setCompetencia_id(selectCompetencia);
+		const equipoSeleccionado = listaCompetencias.find(
+			(equipo) => equipo.id_competencia === parseInt(selectCompetencia)
 		);
 		const porcentaje =
 			equipoSeleccionado?.extra_por_patrocinio || porcentaje_default;
@@ -116,10 +118,10 @@ function Pilotos({ setCurrentView }) {
 
 	// Actualizar datos finales cuando las partes seleccionadas cambian
 	useEffect(() => {
-		if (partesSeleccionadas.length > 0) {
+		if (competencia_id !== null) {
 			const partesPatrocinio = partesSeleccionadas
 				.map((parteId) => {
-					const parte = partsPilotoPatrocinio.find(
+					const parte = partsCompetenciaPatrocinio.find(
 						(p) => p.id_parte === parteId
 					);
 					return parte
@@ -145,7 +147,7 @@ function Pilotos({ setCurrentView }) {
 		} else {
 			setDatosFinales(null); // Si no hay partes seleccionadas, establecer a null
 		}
-	}, [partesSeleccionadas, partsPilotoPatrocinio, porcentaje_aumento_entidad]);
+	}, [competencia_id]);
 
 	// Calcular subtotal y total
 	const calcularSubtotal = (partesPatrocinio) => {
@@ -161,17 +163,30 @@ function Pilotos({ setCurrentView }) {
 
 	// Cargar equipos al inicio
 	useEffect(() => {
-		getPilotos();
+		getCompetencias();
 	}, []);
 
 	// Obtener partes cuando el equipo es seleccionado
 	useEffect(() => {
-		setPartesPilotoPatrocinio([]);
+		// Limpiar partes actuales al cambiar competencia_id
+		setPartsCompetenciaPatrocinio([]);
 		setPartesSeleccionadas([]);
-		if (piloto_id) {
-			getPartesPilotoPatrocinio();
+
+		if (competencia_id) {
+			// Simula la llamada para obtener las partes de la nueva competencia
+			getPartesPtrocinioCompetencia();
+			// Supongamos que `getPartesPtrocinioCompetencia` devuelve las partes asociadas
+
+			// Seleccionar automáticamente todas las partes al cargarlas
 		}
-	}, [piloto_id]);
+	}, [competencia_id]);
+
+	useEffect(() => {
+		const selectedParts = partsCompetenciaPatrocinio.map(
+			(parte) => parte.id_parte
+		);
+		setPartesSeleccionadas(selectedParts);
+	}, [competencia_id, partsCompetenciaPatrocinio]);
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
@@ -181,7 +196,7 @@ function Pilotos({ setCurrentView }) {
 		}
 
 		const datosFinalesSubmit = {
-			id_entidad: parseInt(piloto_id),
+			id_entidad: parseInt(competencia_id),
 			logo_id: uploadedLogoId,
 			partes_patrocinio: datosFinales?.partes_patrocinio || [],
 			subtotal: datosFinales?.subtotal || 0,
@@ -191,7 +206,7 @@ function Pilotos({ setCurrentView }) {
 
 		try {
 			const result = await datapostputdelget(
-				"/patrocinios/create_patrocinio_piloto",
+				"/patrocinios/create_patrocinio_competencia",
 				[datosFinalesSubmit],
 				"POST"
 			);
@@ -211,19 +226,22 @@ function Pilotos({ setCurrentView }) {
 			<form className="container mt-4" onSubmit={handleSubmit}>
 				<div className="mb-3">
 					<label htmlFor="equipos" className="form-label">
-						Pilotos
+						Competencias
 					</label>
 					<select
 						className="form-select"
-						value={piloto_id}
-						onChange={handlePilotoChange}
+						value={competencia_id}
+						onChange={handleEquipoChange}
 					>
 						<option value="" defaultValue>
-							Seleccione un piloto
+							Seleccione una Competencia
 						</option>
-						{listaPilotos.map((equipo) => (
-							<option key={equipo.id} value={equipo.id}>
-								{equipo.nombre}
+						{listaCompetencias.map((compentencia) => (
+							<option
+								key={compentencia.id_competencia}
+								value={compentencia.id_competencia}
+							>
+								{compentencia.nombre}
 							</option>
 						))}
 					</select>
@@ -250,13 +268,13 @@ function Pilotos({ setCurrentView }) {
 					<select
 						className="form-select"
 						multiple
-						value={partesSeleccionadas}
-						onChange={handlePartesSeleccionadas}
+						value={partsCompetenciaPatrocinio.map((parte) => parte.id_parte)}
+						disabled
 					>
-						<option value="" disabled hidden={piloto_id === ""}>
-							Selecciona un piloto
+						<option value="" disabled hidden={competencia_id === ""}>
+							Selecciona una parte de la Competencia
 						</option>
-						{partsPilotoPatrocinio.map((parte) => (
+						{partsCompetenciaPatrocinio.map((parte) => (
 							<option key={parte.id_parte} value={parte.id_parte}>
 								{parte.nombre_parte} - ${parte.precio_parte}
 							</option>
@@ -320,5 +338,4 @@ function Pilotos({ setCurrentView }) {
 		</>
 	);
 }
-
-export default Pilotos;
+export default Competencias;

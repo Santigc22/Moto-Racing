@@ -75,9 +75,9 @@ function NavBar() {
         icon: <i className="bi bi-people-fill"></i>
     },
     {
-      name:"Motos NF",
-      href:"/moto",
-      icon: <i className="bi bi-clipboard2-check-fill"></i>
+        name:"Motos NF",
+        href:"/moto",
+        icon: <i className="bi bi-clipboard2-check-fill"></i>
     },
     {
         name:"Equipos",
@@ -85,20 +85,10 @@ function NavBar() {
         icon: <i class="bi bi-people-fill"></i>
     },
     {
-        name:"Patrocinadores NF",
-        href:"/legalizaciones",
-        icon:<i className="bi bi-pencil"></i>
-    },
-    {
-      name:"Patrocinios NF",
-      href:"/legalizaciones",
-      icon:<i className="bi bi-pencil"></i>
-    },
-    {
-      name:"Patrocinadores 4NF",
-      href:"/legalizaciones",
-      icon:<i className="bi bi-pencil"></i>
-    },
+			  name: "Patrocinios",
+			  href: "/patrocinios",
+			  icon: <i className="bi bi-pencil"></i>,
+		},
     {
         name: "Cerrar sesión",
         href:"/",

@@ -43,6 +43,7 @@ export default function Home() {
 			showPassIcon == "bi bi-eye" ? "bi bi-eye-slash" : "bi bi-eye"
 		);
 	};
+
 	const SubmitHandler = async (e) => {
 		e.preventDefault();
 		try {
@@ -89,10 +90,11 @@ export default function Home() {
 				}
 			);
 
-      const token = await response.json()
-
+			const token = await response.json();
+			console.log(token);
 			if (response.ok) {
-        sessionStorage.setItem('authToken',token.authorization);
+				sessionStorage.setItem("authToken", token.authorization);
+				sessionStorage.setItem("tipo_usuario", token.user_tipe);
 				router.push("/dashboard");
 			} else {
 				alert("Algo ha salido mal");

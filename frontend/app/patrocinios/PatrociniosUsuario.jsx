@@ -9,6 +9,7 @@ function PatrociniosUsuario() {
 	const [patrocinios, setPatrocinios] = useState({
 		patrocinios_equipos: [],
 		patrocinios_pilotos: [],
+		patrocinios_competencia: [],
 		patrociniosMongoArray: [],
 	});
 
@@ -40,7 +41,7 @@ function PatrociniosUsuario() {
 
 	return (
 		<div className="container">
-			<h1 className="my-4">Patrocinios</h1>
+			<h1 className="my-4">Mis patrocinios</h1>
 
 			<h2>Patrocinios por Equipos</h2>
 			<div className="row">
@@ -57,7 +58,7 @@ function PatrociniosUsuario() {
 								<PatrocinioCard
 									key={patrocinio.id_patrocinio}
 									patrocinio={{ ...patrocinio, ...patrocinioDetails }}
-									tipo="equipo"
+									tipo="Equipo"
 								/>
 							</div>
 						);
@@ -81,7 +82,31 @@ function PatrociniosUsuario() {
 								<PatrocinioCard
 									key={patrocinio.id_patrocinio}
 									patrocinio={{ ...patrocinio, ...patrocinioDetails }}
-									tipo="piloto"
+									tipo="Piloto"
+								/>
+							</div>
+						);
+					})
+				) : (
+					<p>No hay patrocinios para pilotos.</p>
+				)}
+			</div>
+			<h2>Patrocinios por Competencia</h2>
+			<div className="row">
+				{patrocinios.patrocinios_competencia.length > 0 ? (
+					patrocinios.patrocinios_competencia.map((patrocinio) => {
+						const patrocinioDetails = getPatrocinioDetails(
+							patrocinio.id_patrocinio.replace(/"/g, "")
+						);
+						return (
+							<div
+								key={patrocinio.id_patrocinio}
+								className="col-12 col-md-6 col-lg-4"
+							>
+								<PatrocinioCard
+									key={patrocinio.id_patrocinio}
+									patrocinio={{ ...patrocinio, ...patrocinioDetails }}
+									tipo="Compentencia"
 								/>
 							</div>
 						);
