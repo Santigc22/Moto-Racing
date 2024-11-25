@@ -107,6 +107,10 @@ export default function Equipos() {
         }));
     };
 
+    const handleEditTeam = (equipoId) => {
+        router.push(`/equipos/EditarEquipo?id=${equipoId}`);
+    };
+
     const handleSubmit = async () => {
         if (!newTeam.logo) {
             alert("Debe seleccionar una imagen.");
@@ -254,6 +258,9 @@ export default function Equipos() {
                         <button onClick={() => handleViewDetails(equipo.id)} className={styles.iconButton}>
                             <FaSearch />
                         </button>
+                        <button onClick={() => handleEditTeam(equipo.id)} className={styles.iconButton}>
+        Editar
+    </button>
                     </div>
                 ))}
             </div>
