@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Navbar from "../components/Navbar"; // Importar el componente Navbar
+import Navbar from "../Components/NavBar.jsx" // Importar el componente Navbar
 
 export default function Home() {
   const [idPista, setIdPista] = useState("");

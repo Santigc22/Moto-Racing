@@ -256,7 +256,7 @@ const getUserInformation = async (req, res) => {
 		res.status(401).json({ error: error.message });
 	}
 
-	const token = bearer.split(" ")[1];
+	const token = bearer
 
 	try {
 		const decoded = jwt.verify(token, process.env.SECRET_TOKEN);

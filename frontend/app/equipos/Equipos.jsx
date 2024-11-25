@@ -75,7 +75,7 @@ export default function Equipos() {
     };
 
     const handleViewDetails = (equipoId) => {
-        router.push(`/equipos/DetallesEquipo?id=${equipoId}`)
+        router.push(`/equipos/detallesequipo?id=${equipoId}`)
     };
 
     const handleAddTeam = () => {

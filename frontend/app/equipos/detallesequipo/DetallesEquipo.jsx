@@ -1,15 +1,20 @@
-'use client';
+'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-export default function DetallesEquipo() {
+
+
+function DetallesEquipo() {
     const router = useRouter();
     const searchParams = useSearchParams();
+
+
     const equipoId = searchParams.get('id');
 
     const [equipo, setEquipo] = useState(null);
     const [error, setError] = useState(null);
+
 
     useEffect(() => {
         const fetchEquipo = async () => {
@@ -52,3 +57,5 @@ export default function DetallesEquipo() {
         </div>
     );
 }
+
+export default DetallesEquipo
