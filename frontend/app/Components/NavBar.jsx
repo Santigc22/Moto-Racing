@@ -1,14 +1,39 @@
 "use client";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import "./NavBar.css";
 import { useRouter } from "next/navigation";
+import { datapostputdelget } from "./Peticiones";
 
 function NavBar() {
 
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState("");
+
+  const [profileName, setProfileName] = useState("");
+
+  const getName = async () =>
+  {
+    const responses = await datapostputdelget("/usuarios/info", "" ,"GET");
+    console.log(responses);
+   
+
+      if(!responses)
+      {
+        setProfileName(" Perfil")
+      }
+      else{
+        setProfileName(responses.user_name);
+      }
+      
+    }
+  
+
+  useEffect(() => {
+    getName();
+  }, [])
+  
 
   const [isCollapsed, SetIsCollapsedSidebar] = useState(false);
 
@@ -108,7 +133,7 @@ function NavBar() {
 
       </div>
 
-      <div className={`d-flex align-items-center text-center col-6`}>
+      <div className={`d-flex align-items-center text-center col-3`}>
 
         <div>
 
@@ -116,6 +141,18 @@ function NavBar() {
 
         </div>
 
+      </div>
+
+      <div className={`d-flex fs-3 text-white align-items-center col-3 justify-content-end`}>
+
+              <Link href={"/profile"} className=" text-decoration-none text-white d-flex align-items-center">
+                      <span className='siderbar__icon'>
+                      <i class="bi bi-person-circle fs-3 text-white m-2 position-relative"  style={{bottom: "3px"}}></i>
+                      </span>
+                      <h3 className={`sider__name `}> {profileName}</h3>
+              </Link>
+      
+       
       </div>
     
       <div  className={`d-flex align-items-center col-3 justify-content-end`}>

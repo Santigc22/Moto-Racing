@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 
+
+
 const datapostputdelget = async (url, data, method) => {
 	let result = "";
 	if (method === "GET") {
@@ -10,6 +12,7 @@ const datapostputdelget = async (url, data, method) => {
 			headers: {
 				"access-control-allow-origin": "*",
 				"Content-Type": "application/json",
+				"authorization":sessionStorage.getItem("authToken")
 			},
 		});
 	} else {
