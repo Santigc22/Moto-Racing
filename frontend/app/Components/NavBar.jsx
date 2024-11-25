@@ -42,7 +42,7 @@ function NavBar() {
     },
     {
         name: "Pistas NF",
-        href: "/organizaciones",
+        href: "/pista",
         icon: <i className="bi bi-building"></i>
     },
     {
