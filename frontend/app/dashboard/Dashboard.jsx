@@ -1,12 +1,49 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import NavBar from '../Components/NavBar'
 import { AcmeLogo } from '../Components/AcmeLogo'
 import { useEffect } from 'react';
 import styles from './page.module.css'
+import DashboardCards from '../Components/DashboardCards';
 
 function Dashboard() {
+
+  const [Competencias, setCompetencias] = useState([]);
+
+  const GetCompetencies = async () =>
+    {
+
+      try {
+ 
+        const response = await fetch('https://moto-racing.onrender.com/competencia', 
+          {
+            method: 'GET',
+            
+          });
+ 
+          if (response.ok) {
+            const data = await response.json();
+            const compeData = await data.competencias
+            setCompetencias(compeData);
+            console.log(compeData);
+           // router.push("/dashboard");
+         } else {
+           alert("Algo ha salido mal");
+         }
+ 
+          console.log(response.json);
+       
+      } catch (error) {
+        console.log(error);
+      }
+     
+   }
+
+  useEffect(()=>
+  {
+    GetCompetencies();
+  },[])
 
   useEffect(() => {
     // Asegúrate de que el JS de Bootstrap se cargue en el lado del cliente
@@ -16,7 +53,7 @@ function Dashboard() {
   }, []);
 
   return (
-    <div>
+    <div style={{height:'100vh'}}>
 
     <NavBar />
 
@@ -37,7 +74,7 @@ function Dashboard() {
           {/* Primera imagen */}
           <div className={`carousel-item active ${styles.customCarouselItem}`}>
             <img
-              src="https://www.dsf.my/wp-content/uploads/2018/02/ducati-panigale-v4h.jpg"
+              src="https://preview.redd.it/emextglktw771.jpg?auto=webp&s=87d0301b4cc6cfc7e424faa430778c6547413dad"
               className={`d-block ${styles.customCraouselImg}`}
               alt="Imagen 1"
             />
@@ -62,6 +99,14 @@ function Dashboard() {
 
             />
           </div>
+
+          <div className={`carousel-item ${styles.customCarouselItem}`}>
+            <img
+              src="https://publimotos.com/wp-content/uploads/2023/11/Atencion-KTM-1390-Super-Duke-R-y-Super-Duke-R-EVO-La-marca-va-a-regalar-a-un-mortal-la-bestia-Hypernaked-Aqui-le-decimos-como.jpg"
+              className={`d-block ${styles.customCraouselImg}`}
+              alt="Imagen 1"
+            />
+          </div>
         </div>
 
         {/* Controles de navegación */}
@@ -76,9 +121,25 @@ function Dashboard() {
       </div>
     </div>
 
-    
+    <div className={styles.SubSection}>
+      Competencias
+    </div>
 
+      <div className={`d-flex ${styles.competencesRail}`}>
+        
 
+          
+         {Array.isArray(Competencias) && Competencias.map((Compe, index) => (
+
+    <ul>
+          <DashboardCards
+          key={index}
+          competenceTitle={Compe.nombre}
+          competenceDescription={Compe.descripcion}/>
+    </ul>         
+          ))}
+
+      </div>
 
     </div>
   )

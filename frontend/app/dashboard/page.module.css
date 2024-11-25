@@ -38,7 +38,7 @@
   .customCarouselSlide{
     border-bottom: solid;
     border-color: #000000;
-    box-shadow: 0 -8px 55px 62px black;
+    box-shadow: 0 -26px 0px 33px black;
   }
 
   .customCarouselInner{
@@ -68,6 +68,15 @@
     left: 28%;
   }
   
+
+.SubSection{
+  font-family: fantasy;
+  font-size: xxx-large;
+}
+
+.competencesRail{
+  overflow: auto;
+}
   /*/////////////////////////////////////////////////*/
   
   @media (prefers-color-scheme: dark) {

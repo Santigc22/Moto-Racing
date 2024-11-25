@@ -1,10 +1,9 @@
-'use client'
-import 'bootstrap-icons/font/bootstrap-icons.css';
+"use client";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import { useState } from "react";
-import Link from 'next/link';
-import  './NavBar.css'
-import { useRouter } from 'next/navigation';
-
+import Link from "next/link";
+import "./NavBar.css";
+import { useRouter } from "next/navigation";
 
 function NavBar() {
 
@@ -51,6 +50,11 @@ function NavBar() {
         icon: <i className="bi bi-people-fill"></i>
     },
     {
+      name:"Motos NF",
+      href:"/moto",
+      icon: <i className="bi bi-clipboard2-check-fill"></i>
+    },
+    {
         name:"Equipos",
         href:"/equipos",
         icon: <i class="bi bi-people-fill"></i>
@@ -69,7 +73,7 @@ function NavBar() {
       name:"Patrocinadores 4NF",
       href:"/legalizaciones",
       icon:<i className="bi bi-pencil"></i>
-  },
+    },
     {
         name: "Cerrar sesión",
         href:"/",
@@ -153,4 +157,4 @@ function NavBar() {
   )
 }
 
-export default NavBar
+export default NavBar;

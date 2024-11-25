@@ -1,0 +1,63 @@
+.cardImg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ajusta la imagen al tamaño del contenedor */
+    position: relative; /* La imagen debe estar dentro del flujo del contenedor */
+    z-index: 1; /* Asegura que la imagen esté sobre el fondo del contenedor */
+  }
+
+
+.competenceItem {
+  width: 468px;
+  height: 238px;
+  display: inline-block;
+  margin-right: 0.4rem;
+  padding-bottom: 0.6rem;
+  background: linear-gradient(90deg, #c80502, #000 103.38%);
+  background-size: 100% 0.6rem;
+}
+
+/* Contenedor de la imagen */
+.imageContainer {
+  position: relative; /* Importante para que funcione el pseudo-elemento */
+  width: 468px;
+  height: 230px;
+  overflow: hidden; /* Asegura que la sombra interna se recorte */
+  bottom: 6.7rem;
+}
+
+
+/* Sombra interna aplicada al contenedor */
+.imageContainer::after {
+  content: '';
+  position: absolute; /* Posiciona el pseudo-elemento dentro del contenedor */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  box-shadow: inset 162px 0 140px -32px rgb(0 0 0); /* Sombra interna */
+  z-index: 2; /* Coloca la sombra sobre la imagen */
+  pointer-events: none; /* Asegura que no interfiera con la interacción */
+}
+
+.competencesRail{
+    height: auto;
+    padding-top: 1rem;
+
+}
+
+.infoItem{
+    position: relative;
+    bottom: -1rem;
+    color: white;
+    z-index: 3;
+    left: 24px;
+}
+
+.descriptionItem{
+    position: relative;
+    z-index: 3;
+    color: white;
+    left: 24px;
+    top: 118px;
+}

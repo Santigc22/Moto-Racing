@@ -14,7 +14,7 @@ const parametersUser = Joi.object({
 	identificacion: Joi.string().max(10).required(),
 	password: Joi.string().max(255).required(),
 	tipoUser: Joi.number().max(10).required(),
-	correo: Joi.string().max(255).required()
+	correo: Joi.string().max(255).required(),
 });
 
 const { sendOtpEmail } = require("../config/mailer");
@@ -23,7 +23,6 @@ const { sendOtpEmail } = require("../config/mailer");
 const generateOTP = () => {
 	return Math.floor(100000 + Math.random() * 900000); // Genera un número entre 100000 y 999999
 };
-
 
 // Controlador para validar usuario y contraseña
 const getUsers = async (req, res) => {
@@ -70,11 +69,15 @@ const getUsers = async (req, res) => {
 
 		// Generar el OTP
 		const otp = generateOTP();
-		// Guardar el OTP en la base de datos o en una caché temporal para que sea verificado
-		await conexion.execute("UPDATE usuario SET otp = ? WHERE id = ?", [
-			otp,
-			user.id,
-		]);
+		const fecha = new Date();
+		const formattedDate = fecha.toISOString().slice(0, 19).replace("T", " "); // Formato 'YYYY-MM-DD HH:MM:SS'
+
+		// Guardar el OTP en la base de datos
+		await conexion.execute(
+			"UPDATE usuario SET otp = ?, otp_generado_en = ? WHERE id = ?",
+			[otp, formattedDate, user.id]
+		);
+
 
 		const userEmail = {
 			correo: user.correo, // Asegúrate de que 'user' está correctamente definido
@@ -108,8 +111,6 @@ const getUsers = async (req, res) => {
 const setUsers = async (req, res) => {
 	let conexion = null; // Inicializar la conexión como null
 
-
-
 	try {
 		// Obtener los datos del cuerpo de la solicitud
 		const {
@@ -122,12 +123,12 @@ const setUsers = async (req, res) => {
 			identificacion,
 			password,
 			tipoUser,
-			correo
+			correo,
 		} = req.body;
-	
+
 		console.log(req.body);
 		//Validar errores
-	
+
 		const { error } = parametersUser.validate({
 			nombre,
 			apellido,
@@ -138,12 +139,11 @@ const setUsers = async (req, res) => {
 			identificacion,
 			password,
 			tipoUser,
-			correo
-		})
+			correo,
+		});
 
-		if(error)
-		{
-			return(res.status(400).json({error:error.details[0].message}))
+		if (error) {
+			return res.status(400).json({ error: error.details[0].message });
 		}
 
 		// Encriptar la contraseña
@@ -168,7 +168,7 @@ const setUsers = async (req, res) => {
 				telefono,
 				hashedPassword,
 				0,
-				tipoUser
+				tipoUser,
 			]
 		);
 
@@ -247,5 +247,49 @@ const verifyOTP = async (req, res) => {
 	}
 };
 
+const getUserInformation = async(req, res) => {
+	const bearer = req.headers.authorization
+
+	if (!bearer) {
+		const error = new Error('Unautorizado')
+		res.status(401).json({error: error.message})
+	}
+
+	const token = bearer.split(' ')[1]
+
+	try {
+		const decoded = jwt.verify(token, process.env.SECRET_TOKEN)
+		const id = decoded.user_id
+
+		conexion = await connectDatabase();
+
+		const [rows] = await conexion.execute(
+			"SELECT nombre, apellido, tipo_identificacion_id, identificacion, fecha_nacimiento, direccion, telefono FROM usuario WHERE id = ?",
+			[id]
+		);
+
+		if (rows.length === 0) {
+			return res.status(401).json({
+				success: false,
+				message: "Usuario no encontrado",
+			});
+		}
+
+		const user = rows[0];
+
+		res.status(200).json({
+			user_id: user.id,
+			user_name: user.nombre,
+			user_apellido: user.apellido,
+			user_identificcacion: user.identificacion,
+			user_fecha_nacimiento: user.fecha_nacimiento,
+			user_direccion: user.direccion,
+			user_telefono: user.telefono,
+		})
+	} catch(error) {
+		res.status(500).json({error: 'Invalid token'})
+	}
+}
+
 // Exportar el controlador
-module.exports = { getUsers, setUsers, verifyOTP };
+module.exports = { getUsers, setUsers, verifyOTP, getUserInformation };
