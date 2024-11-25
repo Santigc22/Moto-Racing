@@ -100,7 +100,7 @@ function Dashboard() {
             />
           </div>
 
-          <div className={`carousel-item active ${styles.customCarouselItem}`}>
+          <div className={`carousel-item ${styles.customCarouselItem}`}>
             <img
               src="https://publimotos.com/wp-content/uploads/2023/11/Atencion-KTM-1390-Super-Duke-R-y-Super-Duke-R-EVO-La-marca-va-a-regalar-a-un-mortal-la-bestia-Hypernaked-Aqui-le-decimos-como.jpg"
               className={`d-block ${styles.customCraouselImg}`}
