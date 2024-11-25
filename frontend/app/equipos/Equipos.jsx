@@ -17,6 +17,14 @@ export default function Equipos() {
     const [resultsPerPage, setResultsPerPage] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
     const [teamNameFilter, setTeamNameFilter] = useState('');
+    const [showForm, setShowForm] = useState(false);
+    const [newTeam, setNewTeam] = useState({
+        nombre: '',
+        representante_id: '',
+        logo: null,
+        extra_por_patrocinio: ''
+    });
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         const fetchEquipos = async () => {
@@ -71,20 +79,151 @@ export default function Equipos() {
     };
 
     const handleAddTeam = () => {
+        setShowForm(true);
+    };
 
+    const handleCancel = () => {
+        setShowForm(false);
+        setNewTeam({
+            nombre: '',
+            representante_id: '',
+            logo: null,
+            extra_por_patrocinio: ''
+        });
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setNewTeam((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleFileChange = (e) => {
+        setNewTeam((prev) => ({
+            ...prev,
+            logo: e.target.files[0]
+        }));
+    };
+
+    const handleSubmit = async () => {
+        if (!newTeam.logo) {
+            alert("Debe seleccionar una imagen.");
+            return;
+        }
+
+        try {
+            setSubmitting(true);
+            
+            // Subir imagen
+            const formData = new FormData();
+            formData.append("image", newTeam.logo);
+            const imageResponse = await fetch("https://moto-racing.onrender.com/s3/upload/equipos", {
+                method: "POST",
+                body: formData
+            });
+            const imageResult = await imageResponse.json();
+
+            if (!imageResponse.ok) {
+                alert("Error al subir la imagen: " + imageResult.message);
+                return;
+            }
+
+            const logo_id = imageResult.id_file_attacchment;
+
+            // Crear equipo
+            const teamResponse = await fetch("https://moto-racing.onrender.com/equipos", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    nombre: newTeam.nombre,
+                    representante_id: newTeam.representante_id,
+                    logo_id,
+                    extra_por_patrocinio: newTeam.extra_por_patrocinio
+                })
+            });
+
+            const teamResult = await teamResponse.json();
+
+            if (teamResponse.ok) {
+                alert("Equipo creado exitosamente");
+                setShowForm(false);
+                setCurrentPage(1); // Recargar equipos
+            } else {
+                alert("Error al crear el equipo: " + teamResult.message);
+            }
+        } catch (error) {
+            alert("Error en el proceso: " + error.message);
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
         <div>
-
             <NavBar />
 
-            <h2 classname={styles.title}>Listado de equipos</h2>
+            <h2 className={styles.title}>Listado de equipos</h2>
 
-            <button onClick={handleAddTeam} className={styles.addButton}>
-                Agregar Nuevo Equipo
-            </button>
+            {showForm ? (
+                <div className={styles.formContainer}>
+                    <h3>Crear Equipo</h3>
+                    <label>
+                        Nombre:
+                        <input
+                            type="text"
+                            name="nombre"
+                            value={newTeam.nombre}
+                            onChange={handleInputChange}
+                            maxLength={50}
+                        />
+                    </label>
+                    <label>
+                        Representante:
+                        <input
+                            type="number"
+                            name="representante_id"
+                            value={newTeam.representante_id}
+                            onChange={handleInputChange}
+                            maxLength={20}
+                        />
+                    </label>
+                    <label>
+                        Logo:
+                        <input
+                            type="file"
+                            name="logo"
+                            onChange={handleFileChange}
+                            accept="image/*"
+                        />
+                    </label>
+                    <label>
+                        Extra por patrocinio:
+                        <input
+                            type="number"
+                            name="extra_por_patrocinio"
+                            value={newTeam.extra_por_patrocinio}
+                            onChange={handleInputChange}
+                            maxLength={2}
+                        />
+                    </label>
+                    <button onClick={handleSubmit} disabled={submitting}>
+                        Crear
+                    </button>
+                    <button onClick={handleCancel} disabled={submitting}>
+                        Cancelar
+                    </button>
+                </div>
+            ) : (
+                <button onClick={handleAddTeam} className={styles.addButton}>
+                    Agregar Nuevo Equipo
+                </button>
+            )}
 
+            {/* Filtros y listado de equipos */}
             <div>
                 <label htmlFor="teamNameFilter">Filtro nombre de equipo</label>
                 <input 
@@ -128,7 +267,6 @@ export default function Equipos() {
                     Siguiente
                 </button>
             </div>
-
         </div>
     );
 }
