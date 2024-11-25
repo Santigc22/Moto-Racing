@@ -5,8 +5,11 @@ import NavBar from '../Components/NavBar'
 import { useEffect, useState } from 'react';
 import styles from "./page.module.css"
 import { FaSearch } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
 
 export default function Equipos() {
+    const router = useRouter();
+
     const [equipos, setEquipos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -64,7 +67,7 @@ export default function Equipos() {
     };
 
     const handleViewDetails = (equipoId) => {
-
+        router.push(`/equipos/DetallesEquipo?id=${equipoId}`)
     };
 
     const handleAddTeam = () => {

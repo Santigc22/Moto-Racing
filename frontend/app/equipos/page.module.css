@@ -59,3 +59,21 @@
   .addButton:hover {
     background-color: #218838; 
   }
+
+  .detailsContainer {
+    padding: 20px;
+  }
+  
+  .backButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .backButton:hover {
+    background-color: #0056b3;
+  }
