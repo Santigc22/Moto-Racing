@@ -46,13 +46,14 @@ async function sendOtpEmail(user) {
 	}
 }
 // Función para enviar el correo
-async function sendEmail(userEmail, patrocinio) {
+async function sendEmail(userEmail, patrocinio, Test) {
 	// Plantilla de correo
 	const mailOptions = {
 		from: '"Moto-Racing" <moto.racing.ix@gmail.com>', // Correo del remitente
 		to: userEmail.correo, // Correo del destinatario
 		subject: "Detalles del Patrocinio",
 		html: `
+		<h1>Detalles ${Test}</h1>
 			<h2>Hola ${userEmail.nombre} ${userEmail.apellido},</h2>
 			<p>Gracias por tu patrocinio. Aquí tienes los detalles:</p>
 			<ul>
