@@ -10,8 +10,9 @@ const s3 = require("./routes/S3");
 const tiposRouter = require("./routes/tipos_routes");
 const patrociniosRouter = require("./routes/patrocinios_routes");
 const motosRoutes = require("./routes/motos_routes");
-const competenciaRouter = require('./routes/competencia_routes')
-const carrerasRouter = require('./routes/carreras_routes')
+const competenciaRouter = require("./routes/competencia_routes");
+const carrerasRouter = require("./routes/carreras_routes");
+const pilotosRouter = require("./routes/piloto_routes");
 // Configurar el almacenamiento de Multer
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
@@ -51,13 +52,13 @@ app.get("/", async (req, res) => {
 app.use("/tipos", tiposRouter);
 app.use("/patrocinios", patrociniosRouter);
 app.use("/usuarios", usuarioRoutes);
-app.use("/pista",pistaRoutes);
-
+app.use("/pista", pistaRoutes);
+app.use("/pilotos", pilotosRouter);
 app.use("/s3", s3);
 app.use("/equipos", equiposRouter);
 app.use("/motos", motosRoutes);
 app.use("/competencia", competenciaRouter);
-app.use('/carreras', carrerasRouter)
+app.use("/carreras", carrerasRouter);
 
 const PORT = process.env.PORT;
 

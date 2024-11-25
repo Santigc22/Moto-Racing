@@ -4,16 +4,14 @@ import React, { useState } from "react";
 
 function PatrocinioCard({ patrocinio, tipo }) {
 	const [showParts, setShowParts] = useState(false);
-	const isEquipo = tipo === "equipo";
+	const isEquipo = tipo;
 
 	const toggleShowParts = () => setShowParts(!showParts);
 
 	return (
 		<div className="card my-3">
 			<div className="card-header">
-				<h5 className="card-title">
-					Patrocinio {isEquipo ? "Equipo" : "Piloto"}
-				</h5>
+				<h5 className="card-title">Patrocinio {isEquipo}</h5>
 			</div>
 			<div className="card-body">
 				<p>
@@ -22,10 +20,7 @@ function PatrocinioCard({ patrocinio, tipo }) {
 				<p>
 					<strong>ID Patrocinio:</strong> {patrocinio.id_patrocinio}
 				</p>
-				<p>
-					<strong>{isEquipo ? "ID Equipo" : "ID Piloto"}:</strong>{" "}
-					{isEquipo ? patrocinio.id_equipo : patrocinio.id_piloto}
-				</p>
+
 				<p>
 					<strong>Total:</strong> ${patrocinio.total}
 				</p>

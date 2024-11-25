@@ -375,6 +375,7 @@ WHERE p.id = ?
 	}
 }
 
+//* trae los patrocinios de un usuario, solo es sirve si el usuario es patrocinador
 async function getPatrociniosUsuario(req, res) {
 	const user_id = 11;
 
@@ -390,6 +391,11 @@ async function getPatrociniosUsuario(req, res) {
 		[user_id]
 	);
 
+	const [patrocinios_competencia] = await conexion.execute(
+		`Select * from patrocinios_competencia where id_patrocinador = ?`,
+		[user_id]
+	);
+
 	const patrocinios = conectMongo.collection("patrocinios");
 
 	const patrociniosMongo = await patrocinios.find({ id_patrocinador: user_id });
@@ -400,7 +406,12 @@ async function getPatrociniosUsuario(req, res) {
 
 	res.json({
 		success: true,
-		data: { patrocinios_equipos, patrocinios_pilotos, patrociniosMongoArray },
+		data: {
+			patrocinios_equipos,
+			patrocinios_pilotos,
+			patrocinios_competencia,
+			patrociniosMongoArray,
+		},
 	});
 }
 
@@ -454,6 +465,57 @@ async function getPatrociniosPatrocinador(req, res) {
 	res.json({
 		success: true,
 		data: { patrocinios_equipos, patrociniosMongoArray },
+	});
+}
+
+//* trae los patrocinios de un piloto, solo es sirve si el usuario es un piloto
+async function getPatrociniosPiloto(req, res) {
+	const user_id = 2;
+
+	const conexion = await connectDatabase();
+
+	const [piloto] = await conexion.execute(`SELECT * FROM piloto WHERE id = ?`, [
+		user_id,
+	]);
+
+	// console.log(equipo);
+	if (piloto.length === 0) {
+		return res.status(404).json({
+			success: false,
+			message: "El usuario no es un piloto",
+		});
+	}
+
+	const [patrocinios_piloto] = await conexion.execute(
+		`Select * from patrocinios_pilotos where id_piloto = ?`,
+		[piloto[0].id]
+	);
+
+	console.log(patrocinios_piloto);
+
+	const patrocinios = conectMongo.collection("patrocinios");
+
+	const patrociniosMongoArray = [];
+	for (const patrocinio of patrocinios_piloto) {
+		patrocinio.id_patrocinio = patrocinio.id_patrocinio.replace(/['"]+/g, "");
+		if (ObjectId.isValid(patrocinio.id_patrocinio)) {
+			// Convertimos el id a ObjectId para que la consulta funcione correctamente
+			const patrociniosMongo = await patrocinios
+				.find({ _id: new ObjectId(patrocinio.id_patrocinio) })
+				.toArray();
+
+			// console.log(patrociniosMongo);
+			patrociniosMongoArray.push(...patrociniosMongo);
+		} else {
+			console.warn(
+				`El ID "${patrocinio.id_patrocinio}" no es un ObjectId válido.`
+			);
+		}
+	}
+
+	res.json({
+		success: true,
+		data: { patrocinios_piloto, patrociniosMongoArray },
 	});
 }
 
@@ -526,7 +588,17 @@ WHERE p.id = ?`,
 
 async function modificar_partes_equipo(req, res) {
 	try {
-		const { id_parte, id_equipo, is_enable, precio } = req.body;
+		const user_id = 11;
+
+		const conexion = await connectDatabase();
+		const [equipo] = await conexion.execute(
+			`select * from equipo e where e.representante_id=?`,
+			[user_id]
+		);
+
+		const id_equipo = equipo[0].id;
+		const { id_parte, is_enable, precio } = req.body;
+
 		const updates = [];
 		const values = [];
 
@@ -548,7 +620,7 @@ async function modificar_partes_equipo(req, res) {
 		}
 
 		// Conectar a la base de datos
-		const conexion = await connectDatabase();
+		// const conexion = await connectDatabase();
 
 		// Agregar los IDs al final de los valores
 		values.push(id_equipo, id_parte);
@@ -577,7 +649,8 @@ async function modificar_partes_equipo(req, res) {
 
 async function modificar_partes_piloto(req, res) {
 	try {
-		const { id_parte, id_piloto, is_enable, precio } = req.body;
+		const id_piloto = 2;
+		const { id_parte, is_enable, precio } = req.body;
 		const updates = [];
 		const values = [];
 
@@ -626,6 +699,427 @@ async function modificar_partes_piloto(req, res) {
 	}
 }
 
+//* Compentencias
+
+//* trae las partes de una competencia, solo es sirve si la competencia existe
+async function partesCompetenciaPatrocinio(req, res) {
+	try {
+		const id = req.params.id_competencia; //id_competencia
+
+		const { error } = schemaId.validate({ id });
+		if (error) {
+			return res.status(400).json({
+				success: false,
+				message: error.details[0].message,
+			});
+		}
+
+		const conexion = await connectDatabase();
+		const [competencia] = await conexion.execute(
+			`SELECT * FROM competencia WHERE id_competencia = ?`,
+			[id]
+		);
+
+		if (competencia.length === 0) {
+			return res.status(404).json({
+				success: false,
+				message: "La compentecia no existe no existe",
+			});
+		}
+
+		const [rows] = await conexion.execute(
+			`SELECT pp.id          AS id_parte,
+       pp.nombre      AS nombre_parte,
+       pp.descripcion AS descripcion_parte,
+       ppp.precio      AS precio_parte,
+       ppp.is_enable  AS parte_disponible
+FROM competencia_partes_patrocinio ppp
+         JOIN competencia p ON p.id_competencia = ppp.id_competencia
+         JOIN partes_competencia_patrocinio pp ON pp.id = ppp.id_parte_competencia_patrocinio
+WHERE p.id_competencia = ?
+  and ppp.is_enable = 1`,
+			[id]
+		);
+
+		if (rows.length === 0) {
+			return res.status(404).json({
+				success: false,
+				message: "La compenecia no tiene partes disponibles",
+			});
+		}
+
+		res.json({
+			success: true,
+			data: { ["partes"]: rows, ["compentecia"]: competencia[0] },
+		});
+	} catch (error) {
+		console.error("Error en la consulta:", error);
+		res.status(500).json({
+			success: false,
+			message: "Error al consultar la base de datos",
+		});
+	}
+}
+
+// crear patrocinio de una competencia
+async function createPatrocinioCompetencia(req, res) {
+	try {
+		const conexion = await connectDatabase();
+		const user_id = 11;
+
+		const [usuario] = await conexion.execute(
+			"SELECT * FROM usuario WHERE id = ?",
+			[user_id]
+		);
+		const user = usuario[0];
+
+		const userEmail = {
+			correo: user.correo, // Asegúrate de que 'user' está correctamente definido
+			nombre: user.nombre,
+			apellido: user.apellido,
+		};
+		for (const parte of req.body) {
+			const { error } = schemaPatrocinioInsert.validate(parte);
+			if (error) {
+				return res.status(400).json({
+					success: false,
+					message: error.details[0].message,
+				});
+			}
+			// const user_id = req.user.user_id;
+
+			for (const partes_patrocinio of parte.partes_patrocinio) {
+				// console.log(partes_patrocinio);
+
+				const [rows] = await conexion.execute(
+					`SELECT pp.id, ppp.is_enable       
+FROM competencia_partes_patrocinio ppp
+         JOIN competencia p ON p.id_competencia = ppp.id_competencia
+         JOIN partes_competencia_patrocinio pp ON pp.id = ppp.id_parte_competencia_patrocinio
+WHERE p.id_competencia = ?
+  and pp.id = ?`,
+					[parte.id_entidad, partes_patrocinio.id_parte]
+				);
+				const isEnableValue = rows[0].is_enable.readUInt8(0); // Convierte Buffer a número
+
+				if (isEnableValue === 0) {
+					const [parteErr] = await conexion.execute(
+						`SELECT  pp.*
+						from partes_competencia_patrocinio pp
+						where pp.id=?`,
+						[rows[0].id]
+					);
+
+					return res.status(404).json({
+						success: false,
+						message: parteErr[0].nombre + " no esta disponible",
+					});
+				} else {
+					const update = await conexion.execute(
+						`UPDATE competencia_partes_patrocinio
+						SET is_enable = 0
+						WHERE id_competencia = ?
+						  and id_parte_competencia_patrocinio = ?`,
+						[parte.id_entidad, partes_patrocinio.id_parte]
+					);
+					// console.log(update, "asdasd");
+				}
+			}
+
+			parte.id_patrocinador = user_id;
+			// console.log(parte);
+
+			const patrocinios = conectMongo.collection("patrocinios");
+
+			const insertMongo = await patrocinios.insertOne(parte);
+
+			// console.log(insert);
+			if (insertMongo.insertedCount === 0) {
+				return res.status(400).json({
+					success: false,
+					message: "Error al insertar el patrocinio",
+				});
+			}
+
+			//Insertar en la base de datos el id del patrocinio
+
+			const [insert] = await conexion.execute(
+				`INSERT INTO patrocinios_competencia (id_patrocinador,id_patrocinio,id_competencia,id_logo,total, fecha) VALUES (?, ?, ?, ?, ?, NOW())`,
+				[
+					parte.id_patrocinador,
+					insertMongo.insertedId,
+					parte.id_entidad,
+					parte.logo_id,
+					parte.total,
+				]
+			);
+			if (insert.affectedRows === 0) {
+				return res.status(400).json({
+					success: false,
+					message: "Error al insertar el patrocinio",
+				});
+			}
+			await sendEmail(userEmail, parte, "Patrocinio de Compentencia");
+		}
+
+		res.json({
+			success: true,
+			message: "Patrocinio insertado correctamente",
+		});
+	} catch (error) {
+		console.error("Error al insertar el patrocinio:", error);
+		res.status(500).json({
+			success: false,
+			message: "Error al insertar el patrocinio",
+		});
+	}
+}
+
+async function getPatrociniosByCompentencia(req, res) {
+	const id_competencia = req.params.id_competencia;
+	const conexion = await connectDatabase();
+
+	const [compentencia] = await conexion.execute(
+		`SELECT * FROM competencia WHERE id_competencia = ?`,
+		[id_competencia]
+	);
+
+	if (compentencia.length === 0) {
+		return res.status(404).json({
+			success: false,
+			message: "La compentecia no existe no existe",
+		});
+	}
+
+	const [patrocinios_competencias] = await conexion.execute(
+		`Select * from patrocinios_competencia where id_competencia = ?`,
+		[compentencia[0].id_competencia]
+	);
+
+	// console.log(patrocinios_competencias);
+
+	const patrocinios = conectMongo.collection("patrocinios");
+
+	const patrociniosMongoArray = [];
+	for (const patrocinio of patrocinios_competencias) {
+		patrocinio.id_patrocinio = patrocinio.id_patrocinio.replace(/['"]+/g, "");
+		if (ObjectId.isValid(patrocinio.id_patrocinio)) {
+			// Convertimos el id a ObjectId para que la consulta funcione correctamente
+			const patrociniosMongo = await patrocinios
+				.find({ _id: new ObjectId(patrocinio.id_patrocinio) })
+				.toArray();
+
+			// console.log(patrociniosMongo);
+			patrociniosMongoArray.push(...patrociniosMongo);
+		} else {
+			console.warn(
+				`El ID "${patrocinio.id_patrocinio}" no es un ObjectId válido.`
+			);
+		}
+	}
+
+	res.json({
+		success: true,
+		data: { patrocinios_competencias, patrociniosMongoArray },
+	});
+}
+
+async function get_partes_competencia(req, res) {
+	try {
+		const id_competencia = req.params.id_competencia;
+
+		if (!id_competencia) {
+			return res.status(400).json({
+				success: false,
+				message: "El ID de la competencia es obligatorio.",
+			});
+		}
+
+		const conexion = await connectDatabase();
+
+		// Obtener competencia
+		const [competencia] = await conexion.execute(
+			`SELECT * FROM competencia e WHERE e.id_competencia = ?`,
+			[id_competencia]
+		);
+
+		if (!competencia || competencia.length === 0) {
+			return res.status(404).json({
+				success: false,
+				message: "Competencia no encontrada.",
+			});
+		}
+
+		// Obtener partes de la competencia
+		const [partes] = await conexion.execute(
+			`SELECT 
+                ppp.id_parte_competencia_patrocinio AS id_parte,
+                ppp.id_competencia,
+                pp.nombre AS nombre_parte,
+                pp.descripcion AS descripcion_parte,
+                ppp.precio AS precio_parte,
+                ppp.is_enable AS parte_disponible
+             FROM competencia_partes_patrocinio ppp
+             JOIN competencia p ON p.id_competencia = ppp.id_competencia
+             JOIN partes_competencia_patrocinio pp ON pp.id = ppp.id_parte_competencia_patrocinio
+             WHERE p.id_competencia = ?`,
+			[competencia[0].id_competencia]
+		);
+
+		// Validar que haya partes disponibles
+		if (!partes || partes.length === 0) {
+			return res.status(404).json({
+				success: false,
+				message: "No se encontraron partes para la competencia especificada.",
+			});
+		}
+
+		// Respuesta exitosa
+		res.status(200).json({
+			success: true,
+			competencia: competencia[0],
+			partes: partes,
+		});
+	} catch (error) {
+		console.error("Error al obtener partes de la competencia:", error);
+
+		res.status(500).json({
+			success: false,
+			message:
+				"Ocurrió un error inesperado al obtener las partes de la competencia.",
+			error: error.message, // Opcional, útil para depuración
+		});
+	}
+}
+
+async function modificar_partes_competencia(req, res) {
+	try {
+		const id_competencia = req.params.id_competencia;
+		const { id_parte, is_enable, precio } = req.body;
+		const updates = [];
+		const values = [];
+
+		// Verificar si se debe actualizar is_enable
+		if (is_enable !== undefined) {
+			updates.push("is_enable = ?");
+			values.push(is_enable);
+		}
+
+		// Verificar si se debe actualizar precio
+		if (precio !== undefined) {
+			updates.push("precio = ?");
+			values.push(precio);
+		}
+
+		// Si no hay actualizaciones, retornar error
+		if (updates.length === 0) {
+			return res.status(400).send("No se proporcionaron datos para actualizar");
+		}
+
+		// Conectar a la base de datos
+		const conexion = await connectDatabase();
+
+		// Agregar los IDs al final de los valores
+		values.push(id_competencia, id_parte);
+
+		// Ejecutar la consulta de actualización
+		const [result] = await conexion.execute(
+			`UPDATE competencia_partes_patrocinio SET fecha_modificacion=NOW(), ${updates.join(
+				", "
+			)} WHERE id_competencia = ? AND id_parte_competencia_patrocinio = ?`,
+			values
+		);
+
+		// Verificar si se actualizó alguna fila
+		if (result.affectedRows === 0) {
+			return res.status(404).send("No se encontró la parte del piloto");
+		}
+
+		// Enviar respuesta exitosa
+		res.json({ success: true, message: "Parte actualizada correctamente" });
+	} catch (error) {
+		// Manejo de errores
+		// console.error(error);
+		res.status(500).send("Error al actualizar la parte del pilooto", error);
+	}
+}
+
+async function getPatrociniosByPatrocinador(req, res) {
+	try {
+		const id_usuario = 11; // Cambia este valor según corresponda o úsalo como parámetro dinámico.
+
+		if (!id_usuario) {
+			return res.status(400).json({
+				success: false,
+				message: "El ID del usuario es obligatorio.",
+			});
+		}
+
+		const conexion = await connectDatabase();
+
+		// Consultar los patrocinios en la base de datos relacional
+		const [patrocinios_competencias] = await conexion.execute(
+			`SELECT * FROM patrocinios_competencia WHERE id_patrocinador = ?`,
+			[id_usuario]
+		);
+
+		if (!patrocinios_competencias || patrocinios_competencias.length === 0) {
+			return res.status(404).json({
+				success: false,
+				message:
+					"No se encontraron patrocinios para el patrocinador especificado.",
+			});
+		}
+
+		const patrocinios = conectMongo.collection("patrocinios");
+
+		const patrociniosMongoArray = [];
+		for (const patrocinio of patrocinios_competencias) {
+			if (!patrocinio.id_patrocinio) {
+				console.warn(
+					"Patrocinio sin ID detectado en la base de datos relacional."
+				);
+				continue;
+			}
+
+			patrocinio.id_patrocinio = patrocinio.id_patrocinio.replace(/['"]+/g, "");
+
+			if (ObjectId.isValid(patrocinio.id_patrocinio)) {
+				try {
+					// Buscar patrocinio en MongoDB
+					const patrociniosMongo = await patrocinios
+						.find({ _id: new ObjectId(patrocinio.id_patrocinio) })
+						.toArray();
+
+					patrociniosMongoArray.push(...patrociniosMongo);
+				} catch (mongoError) {
+					console.error(
+						`Error al buscar el patrocinio con ID "${patrocinio.id_patrocinio}" en MongoDB:`,
+						mongoError
+					);
+				}
+			} else {
+				console.warn(
+					`El ID "${patrocinio.id_patrocinio}" no es un ObjectId válido.`
+				);
+			}
+		}
+
+		res.status(200).json({
+			success: true,
+			data: { patrocinios_competencias, patrociniosMongoArray },
+		});
+	} catch (error) {
+		console.error("Error al obtener los patrocinios por patrocinador:", error);
+
+		res.status(500).json({
+			success: false,
+			message: "Ocurrió un error al obtener los patrocinios.",
+			error: error.message, // Opcional para depuración
+		});
+	}
+}
+
 module.exports = {
 	partesPilotoPatrocinio,
 	createPatrocinioPiloto,
@@ -637,4 +1131,11 @@ module.exports = {
 	get_partes_piloto,
 	modificar_partes_equipo,
 	modificar_partes_piloto,
+	getPatrociniosPiloto,
+	partesCompetenciaPatrocinio,
+	createPatrocinioCompetencia,
+	getPatrociniosByCompentencia,
+	get_partes_competencia,
+	modificar_partes_competencia,
+	getPatrociniosByPatrocinador,
 };

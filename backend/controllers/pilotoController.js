@@ -6,13 +6,14 @@ const getPilotos = async (req, res) => {
 	try {
 		const conexion = await connectDatabase();
 
-		const [rows] = await conexion.execute(`SELECT p.id, u.nombre||' '||u.apellido AS nombre, p.altura, p.alr, p.tipo_sangre_id
+		const [rows] =
+			await conexion.execute(`SELECT p.id, u.nombre,u.apellido, p.altura, p.arl, p.tipo_sangre_id
                                                 FROM piloto p 
                                                 INNER JOIN usuario u ON u.id = p.id`);
 
 		res.json({
 			success: true,
-			response: rows			
+			response: rows,
 		});
 
 		await conexion.end();
@@ -26,18 +27,20 @@ const getPilotos = async (req, res) => {
 };
 
 // Obtener un piloto por su ID
-const getPilotoById = async (req, res) => { 
+const getPilotoById = async (req, res) => {
 	try {
-        const { id } = req.body;
+		const { id } = req.body;
 
 		// Obtener la conexión a la base de datos
 		const conexion = await connectDatabase();
 
-		const [rows] = await conexion.execute("SELECT * FROM piloto WHERE id = ?", [id]);
+		const [rows] = await conexion.execute("SELECT * FROM piloto WHERE id = ?", [
+			id,
+		]);
 
 		res.json({
 			success: true,
-			response: rows			
+			response: rows,
 		});
 
 		await conexion.end();
@@ -83,60 +86,69 @@ const setPiloto = async (req, res) => {
 
 // Actualizar un piloto
 const updatePiloto = async (req, res) => {
-    let conexion = null;
-    try {
+	let conexion = null;
+	try {
 		const { id, altura, alr, tipo_sangre_id } = req.body;
 
-        conexion = await connectDatabase();
+		conexion = await connectDatabase();
 
-        await conexion.execute(`UPDATE piloto 
+		await conexion.execute(
+			`UPDATE piloto 
 								SET altura = ?, alr = ?, tipo_sangre_id = ?
-								WHERE id = ?`, [altura, alr, tipo_sangre_id, id]);
+								WHERE id = ?`,
+			[altura, alr, tipo_sangre_id, id]
+		);
 
-        res.json({
-            success: true,
-            message: "Piloto actualizado correctamente",
-        });
-    } catch (error) {
-        console.error("Error al actualizar el piloto:", error);
-        res.status(500).json({
-            success: false,
-            message: "Error al actualizar en la base de datos",
-        });
-    } finally {
-        if (conexion) {
-            await conexion.end();
-        }
-    }
+		res.json({
+			success: true,
+			message: "Piloto actualizado correctamente",
+		});
+	} catch (error) {
+		console.error("Error al actualizar el piloto:", error);
+		res.status(500).json({
+			success: false,
+			message: "Error al actualizar en la base de datos",
+		});
+	} finally {
+		if (conexion) {
+			await conexion.end();
+		}
+	}
 };
 
 // Cambiar el estado de un piloto
 const estadoPiloto = async (req, res) => {
-    const id = parseInt(req.params.id);
-    let conexion = null;
-    try {
-        conexion = await connectDatabase();
+	const id = parseInt(req.params.id);
+	let conexion = null;
+	try {
+		conexion = await connectDatabase();
 
-        await conexion.execute('UPDATE piloto SET estado = 0 WHERE id = ?', [id]);
+		await conexion.execute("UPDATE piloto SET estado = 0 WHERE id = ?", [id]);
 
-        res.json({
-            success: true,
-            message: "Estado del piloto actualizado correctamente",
-        });
-    } catch (error) {
-        console.error("Error al actualizar el estado del piloto:", error);
-        res.status(500).json({
-            success: false,
-            message: "Error al actualizar en la base de datos",
-        });
-    } finally {
-        if (conexion) {
-            await conexion.end();
-        }
-    }
+		res.json({
+			success: true,
+			message: "Estado del piloto actualizado correctamente",
+		});
+	} catch (error) {
+		console.error("Error al actualizar el estado del piloto:", error);
+		res.status(500).json({
+			success: false,
+			message: "Error al actualizar en la base de datos",
+		});
+	} finally {
+		if (conexion) {
+			await conexion.end();
+		}
+	}
 };
 
 // Exportar el controlador de pilotos
-module.exports = { setPiloto, getPilotos, getPilotoById, updatePiloto, estadoPiloto };
+module.exports = {
+	setPiloto,
+	getPilotos,
+	getPilotoById,
+	updatePiloto,
+	estadoPiloto,
+};
 
 //test

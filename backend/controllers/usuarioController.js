@@ -78,7 +78,6 @@ const getUsers = async (req, res) => {
 			[otp, formattedDate, user.id]
 		);
 
-
 		const userEmail = {
 			correo: user.correo, // Asegúrate de que 'user' está correctamente definido
 			nombre: user.nombre,
@@ -216,6 +215,7 @@ const verifyOTP = async (req, res) => {
 				user_email: rows[0].correo,
 				user_name: rows[0].nombre,
 				user_lastname: rows[0].apellido,
+				user_tipe: rows[0].id_tipo_usuario,
 			},
 			process.env.SECRET_TOKEN,
 			{
@@ -230,6 +230,7 @@ const verifyOTP = async (req, res) => {
 			user_id: rows[0].id,
 			user_name: rows[0].nombre,
 			user_lastname: rows[0].apellido,
+			user_tipe: rows[0].id_tipo_usuario,
 			authorization: token,
 		});
 
@@ -247,19 +248,19 @@ const verifyOTP = async (req, res) => {
 	}
 };
 
-const getUserInformation = async(req, res) => {
-	const bearer = req.headers.authorization
+const getUserInformation = async (req, res) => {
+	const bearer = req.headers.authorization;
 
 	if (!bearer) {
-		const error = new Error('Unautorizado')
-		res.status(401).json({error: error.message})
+		const error = new Error("Unautorizado");
+		res.status(401).json({ error: error.message });
 	}
 
-	const token = bearer.split(' ')[1]
+	const token = bearer.split(" ")[1];
 
 	try {
-		const decoded = jwt.verify(token, process.env.SECRET_TOKEN)
-		const id = decoded.user_id
+		const decoded = jwt.verify(token, process.env.SECRET_TOKEN);
+		const id = decoded.user_id;
 
 		conexion = await connectDatabase();
 
@@ -285,11 +286,11 @@ const getUserInformation = async(req, res) => {
 			user_fecha_nacimiento: user.fecha_nacimiento,
 			user_direccion: user.direccion,
 			user_telefono: user.telefono,
-		})
-	} catch(error) {
-		res.status(500).json({error: 'Invalid token'})
+		});
+	} catch (error) {
+		res.status(500).json({ error: "Invalid token" });
 	}
-}
+};
 
 // Exportar el controlador
 module.exports = { getUsers, setUsers, verifyOTP, getUserInformation };
