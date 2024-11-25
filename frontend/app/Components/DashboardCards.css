@@ -23,6 +23,7 @@
   width: 468px;
   height: 230px;
   overflow: hidden; /* Asegura que la sombra interna se recorte */
+  bottom: 6.7rem;
 }
 
 
@@ -45,3 +46,18 @@
 
 }
 
+.infoItem{
+    position: relative;
+    bottom: -1rem;
+    color: white;
+    z-index: 3;
+    left: 24px;
+}
+
+.descriptionItem{
+    position: relative;
+    z-index: 3;
+    color: white;
+    left: 24px;
+    top: 118px;
+}

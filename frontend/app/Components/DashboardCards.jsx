@@ -1,25 +1,28 @@
 import React, { useState } from 'react'
 import  './DashboardCards.css'
 
-function DashboardCards({competenceTitle},{competenceDescription}) {
+function DashboardCards({competenceTitle, competenceDescription}) {
 
-    const [ImgArray, setImgArray] = useState(['https://th.bing.com/th/id/OIP.fd_uFqhzsElRa77FbjUQkQHaFj?w=1477&h=1108&rs=1&pid=ImgDetMain   ','https://www.the-race.com/content/images/size/w1200/2023/09/1073666.jpg','https://e00-marca.uecdn.es/assets/multimedia/imagenes/2020/08/10/15970690267373.jpg','https://images.alphacoders.com/130/1308978.jpeg','https://www.xtrafondos.com/wallpapers/carrera-de-motogp-9904.jpg','https://wallpapercave.com/wp/0jGZAWI.jpg','https://th.bing.com/th/id/R.4f465cfc1d5105e029952fedbc22682e?rik=D4hwpeI%2f8HHu7w&pid=ImgRaw&r=0'])
+    const [ImgArray, setImgArray] = useState(['https://img.motoryracing.com/galeria/6000/6658_valentino-rossi-besa-trofeo-gp-italia.jpg', 'https://mx1onboard.com/wp-content/uploads/2024/11/seewer.jpg', 'https://aprilia-colombia.com/wp-content/uploads/2023/03/pistas-de-carreras-2.webp', 'https://cdn.shopify.com/s/files/1/2301/5125/files/ariel-view-of-a-motocross-track_1024x1024.jpg?v=1602608950', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0SQuBxMckS5THM3CIjSyryQZrPCR4fYB5RQ&s'])
 
         console.log(Math.floor(Math.random() * ImgArray.length));
 
   return (
-    <div>
-        <ul>
+
+        
             <li className="competenceItem">
                 <div className='infoItem'>
                     <h3>
                     {competenceTitle}
                     </h3>
-
-                    <div>
-                        <p>{competenceDescription}</p>
-                    </div>
                 </div>
+
+                <div className='descriptionItem'>
+                    <h4>
+                    {competenceDescription}
+                    </h4>
+                </div>
+                
                 <div className="imageContainer">
                     <img
                         src={ImgArray[Math.floor(Math.random() * ImgArray.length)]}
@@ -28,8 +31,8 @@ function DashboardCards({competenceTitle},{competenceDescription}) {
                     />
                 </div>
             </li>
-        </ul>
-    </div>
+        
+ 
   )
 }
 

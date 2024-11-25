@@ -9,7 +9,7 @@ import DashboardCards from '../Components/DashboardCards';
 
 function Dashboard() {
 
-  const [Competencias, setCompetencias] = useState("");
+  const [Competencias, setCompetencias] = useState([]);
 
   const GetCompetencies = async () =>
     {
@@ -24,7 +24,9 @@ function Dashboard() {
  
           if (response.ok) {
             const data = await response.json();
-            setCompetencias(data);
+            const compeData = await data.competencias
+            setCompetencias(compeData);
+            console.log(compeData);
            // router.push("/dashboard");
          } else {
            alert("Algo ha salido mal");
@@ -72,7 +74,7 @@ function Dashboard() {
           {/* Primera imagen */}
           <div className={`carousel-item active ${styles.customCarouselItem}`}>
             <img
-              src="https://www.dsf.my/wp-content/uploads/2018/02/ducati-panigale-v4h.jpg"
+              src="https://preview.redd.it/emextglktw771.jpg?auto=webp&s=87d0301b4cc6cfc7e424faa430778c6547413dad"
               className={`d-block ${styles.customCraouselImg}`}
               alt="Imagen 1"
             />
@@ -97,6 +99,14 @@ function Dashboard() {
 
             />
           </div>
+
+          <div className={`carousel-item active ${styles.customCarouselItem}`}>
+            <img
+              src="https://publimotos.com/wp-content/uploads/2023/11/Atencion-KTM-1390-Super-Duke-R-y-Super-Duke-R-EVO-La-marca-va-a-regalar-a-un-mortal-la-bestia-Hypernaked-Aqui-le-decimos-como.jpg"
+              className={`d-block ${styles.customCraouselImg}`}
+              alt="Imagen 1"
+            />
+          </div>
         </div>
 
         {/* Controles de navegación */}
@@ -111,23 +121,25 @@ function Dashboard() {
       </div>
     </div>
 
-      <div className='d-flex'>
-        <h2>Competencias</h2>
+    <div className={styles.SubSection}>
+      Competencias
+    </div>
 
-        <div>
+      <div className={`d-flex ${styles.competencesRail}`}>
+        
+
+          
          {Array.isArray(Competencias) && Competencias.map((Compe, index) => (
 
-          <DashboardCards competenceTitle={Compe.nombre} competenceDescription={Compe.descripcion}/>
-
+    <ul>
+          <DashboardCards
+          key={index}
+          competenceTitle={Compe.nombre}
+          competenceDescription={Compe.descripcion}/>
+    </ul>         
           ))}
-        </div>
+
       </div>
-      
-   
-
-    
-
-
 
     </div>
   )

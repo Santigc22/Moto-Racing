@@ -68,6 +68,15 @@
     left: 28%;
   }
   
+
+.SubSection{
+  font-family: fantasy;
+  font-size: xxx-large;
+}
+
+.competencesRail{
+  overflow: auto;
+}
   /*/////////////////////////////////////////////////*/
   
   @media (prefers-color-scheme: dark) {
