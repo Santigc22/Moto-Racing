@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Navbar from "../components/Navbar"; // Importar el componente Navbar
 
 export default function Home() {
   const [idPista, setIdPista] = useState("");
@@ -230,7 +231,14 @@ export default function Home() {
 
 
   return (
-    <div className=" m-3 p-3 d-flex flex-column align-items-center vh-100 justify-content-center">
+    
+    <div>
+ {/* Incluir el Navbar aquí */}
+ <Navbar /> {/* Aquí se incluye el componente Navbar */}
+
+{/* Formulario de Registro de Pista */}
+    <div className=" m-3 d-flex  justify-content-center">
+      
       <main className="main">
         <div className="position-relative vw-75 overflow-hidden rounded border border-gray-100 shadow-lg">
           <div className="d-flex flex-column align-middle justify-content-center border-bottom border-gray-200 bg-white px-5 py-2 pt-4 text-center">
@@ -428,5 +436,7 @@ export default function Home() {
         </div>
       </main>
     </div>
+    </div>
+
   );
 }
