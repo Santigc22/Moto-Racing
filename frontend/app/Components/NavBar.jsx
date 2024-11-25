@@ -55,9 +55,9 @@ function NavBar() {
       icon: <i className="bi bi-clipboard2-check-fill"></i>
     },
     {
-        name:"Equipos NF",
-        href:"/practicas",
-        icon: <i className="bi bi-clipboard-check"></i>
+        name:"Equipos",
+        href:"/equipos",
+        icon: <i class="bi bi-people-fill"></i>
     },
     {
         name:"Patrocinadores NF",
